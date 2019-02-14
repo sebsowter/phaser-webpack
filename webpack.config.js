@@ -6,7 +6,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: {
-    index: './src/app/index.js',
+    index: './src/js/index.js',
     phaser: ['phaser']
   },
   output: {
@@ -21,8 +21,7 @@ module.exports = {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'phaser',
-          enforce: true,
-          chunks: 'initial'
+          chunks: 'all'
         }
       }
     },
@@ -48,7 +47,9 @@ module.exports = {
       {
         test: /\.(png|svg|jpg|gif)$/,
         use: [
-          'file-loader'
+          {
+            loader: 'file-loader'
+          }
         ]
       },
       {
@@ -61,8 +62,8 @@ module.exports = {
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
       {
-        from: 'src/data/',
-        to: 'data/'
+        from: 'src/tilemaps/',
+        to: 'tilemaps/'
       },
       {
         from: 'src/images/',
