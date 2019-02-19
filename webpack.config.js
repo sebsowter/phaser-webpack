@@ -21,7 +21,8 @@ module.exports = {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'phaser',
-          chunks: 'all'
+          enforce: true,
+          chunks: 'initial'
         }
       }
     },
@@ -62,12 +63,8 @@ module.exports = {
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
       {
-        from: 'src/tilemaps/',
-        to: 'tilemaps/'
-      },
-      {
-        from: 'src/images/',
-        to: 'images/' 
+        from: 'src/assets/',
+        to: 'assets/'
       }
     ]),
     new HtmlWebpackPlugin({

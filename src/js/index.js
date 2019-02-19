@@ -1,577 +1,934 @@
-import Phaser from 'phaser';
+/**
+ * Phaser platformer prototype, with ladders
+ *
+ * @author Seb Sowter
+ * https://github.com/sebsowter/phaser-ladders
+ */
 
-class ROBO_CATS {
-  constructor() {
-    // Global vars
-    this.game = null;
-    this.debug = false;
-    this.map = null;
-    this.mapLayer = null;
-    this.bullets = null;
-    this.bulletDirection = null;
-    this.player = {
-        view: null,
-        strength: 0.4,
-        speed: 96,
-        hitArea: null,
-        hitArray: [],
-        direction: {
-            'x': 1,
-            'y': 0
-        }
-    };
-    this.isAttacking = false;
-    this.isBuilding = false;
-    this.enemies = null;
-    this.crates = null;
-    this.cursors = null;
-    this.keys = {
-        'space': null
-    };
-    this.nextFire = 0;
-    this.fireRate = 250;
-  }
-
-  /**
-   * Create this.enemies
-   * @method: createthis.enemies
-   */
-  createEnemies() {
-
-    // Create this.enemies group
-    this.enemies = this.game.add.group();
-    this.enemies.enableBody = true;
-    this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
-
-    // Spawn enemy
-    this.spawnEnemy();
-  }
-
-  /**
-   * Create objects such as crates
-   * @method: createObjects
-   */
-  createObjects() {
-    var positions = [
-      new Phaser.Point((27 * 16) - 8, 28 * 16),
-      new Phaser.Point((28 * 16) - 8, 28 * 16)
-    ];
-
-    // Create group
-    this.crates = this.game.add.group();
-    this.crates.enableBody = true;
-    this.crates.physicsBodyType = Phaser.Physics.ARCADE;
-
-    // Create crates
-    for(var i = 0; i < positions.length; i++) {
-      var position = positions[i],
-      crate = this.crates.create(position.x, position.y, 'crate');
-      crate.anchor.setTo(0.5, 0.5);
-      crate.health = 0.2;
-      crate.body.setSize(12, 12, 2, 18);
-      crate.body.immovable = true;
-
-      this.game.physics.enable(crate);
-    }
-  }
-
-  /**
-   * Create this.enemies
-   * @method: createUi
-   */
-  createUi() {
-
-    var ui = this.game.add.sprite(0, 112, 'ui');
-    ui.fixedToCamera = true;
-
-    /*
-
-    // Create this.enemies group
-    ui = this.game.add.group();
-    ui.fixedToCamera = true;
-
-    points = this.game.add.text(10, 8, '496,062,350', {font: "10px Arial", fill: "#ffffff", align: "center"}, ui);
-    rescued = this.game.add.text(this.game.canvas.width - 10, this.game.canvas.height - 2, 'x8', {font: "21px Arial", fill: "#ffffff", align: "center"}, ui);
-    rescued.anchor.setTo(1, 1);
-
-    addText();
-    */
-  }
-
-  /**
-   * Set game scale for old skool pixelation
-   * @method: setGameScale
-   * @param: {scale} ratio to scale
-   */
-  setGameScale(scale) {
-
-    // Scale the game
-    this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
-    this.game.scale.setUserScale(scale, scale);
-
-    // Round rendering to nearest pixels
-    this.game.renderer.renderSession.roundPixels = true;  
-
-    // Apply crisp rendering
-    Phaser.Canvas.setImageRenderingCrisp(this.game.canvas)
-  }
-
-  /**
-   * -----------------------------------------------------------------------------------------------------------------------------
-   * Enemy
-   */
-
-  /**
-   * Spawn enemy
-   * @method: spawnEnemy
-   */
-  spawnEnemy() {
-  }
-
-  /**
-   * Wounds an enemy
-   * @method: woundAgent
-   * @param: {enemy}
-   */
-  createDeath(crate) {
-
-    // Add animation
-    var death = this.game.add.sprite(crate.x, crate.y, "crate_death");
-    death.anchor.setTo(0.5, 0.5);
-
-    death.animations.add("crate_death");
-    death.animations.play("crate_death", 12, false, true);
-
-    crate.kill();
-  }
-
-  /**
-   * Adds enemy death animation
-   * @method: woundAgent
-   * @param: {enemy}
-   */
-  addText() {
-    //text = this.game.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, 'Game Over', {font: "24px Arial", fill: "#ffffff", align: "center"}, ui);
-    //text.anchor.setTo(0.5, 0.5);
-
-    console.log('addText');
-  }
-
-  /**
-   * Gets whether the player.view has already hit enemy
-   * @method: playerEnemyHits
-   * @param: {enemy}
-   * @return: boolean
-   */
-  playerEnemyHits(enemy) {
-    for(var i = 0; i < player.hitArray.length; i++) {
-      if(player.hitArray[i] === enemy)
-        return true;
+/**
+ * Container
+ *
+ * @method PhaserGame
+ * @return { Object } public methods
+ */
+var PhaserGame = (function() {
+    function init(elementId) {
+        var game = new Phaser.Game(256, 224, Phaser.CANVAS, elementId);
+        game.state.add('Game', Game);
+        game.state.start('Game');
     }
 
-    return false;
-  }
-
-  /**
-   * Create this.enemies
-   * @method: playerBuild
-   */
-  playerBuild(direction) {
-
-    // Prevent further attacks
-    isAttacking = true;
-    isBuilding = true;
-
-    // Reset this.enemies
-    player.hitArray = [];
-
-    // Play animation
-    player.view.animations.play(direction.y < 0 ? 'upBuild' : 'downBuild');
-  }
-
-  /**
-   * Create this.enemies
-   * @method: playerAttack
-   */
-  playerAttack(direction) {
-
-    // Prevent further attacks
-    isBuilding = false;
-    isAttacking = true;
-
-    // Keep track of last direction ensuring x is not zero
-    //bulletDirection.x = direction.x === 0 ? player.direction.x : direction.x;
-    //bulletDirection.y = direction.x === 0 && direction.y === 0 ? player.direction.y : direction.y;
-
-    fire(direction);
-
-    // Play animation
-    //player.view.animations.play(direction.y < 0 ? 'upSwipe' : 'downSwipe', 12, false, false);
-
-    //player.hitArea.scale.x = direction.x;
-
-    // Add player.hitArea
-    //player.view.addChild(player.hitArea);
-    /*
-    // Add hit area
-    this.game.time.events.add(Phaser.Timer.SECOND * 1, function() {
-
-      // Reset attack
-      isAttacking = false;
-
-      // Remove player.hitArea
-      player.view.removeChild(player.hitArea);
-
-      player.hitArea.body.x = 0;
-      player.hitArea.body.y = 0;
-
-    }, this);
-    */
-  }
-
-  fire(direction) {
-
-    if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0) {
-      this.nextFire = this.game.time.now + this.fireRate;
-
-      var bullet = bullets.getFirstDead();
-
-      bullet.reset(this.player.view.x, this.player.view.y - 8);
-      //bullet.animations.add('downStanding', [0], 0, true);
-
-      if(this.direction.x !== 0 && this.direction.y !== 0) {
-        bullets.callAll('animations.add', 'animations', 'projectile1', [5, 4], 12, false);
-        bullets.callAll('play', null, 'projectile1');
-      } else if(this.direction.x !== 0) {
-        bullets.callAll('animations.add', 'animations', 'projectile2', [1, 0], 12, false);
-        bullets.callAll('play', null, 'projectile2');
-      } else if(this.direction.y !== 0) {
-        bullets.callAll('animations.add', 'animations', 'projectile3', [3, 2], 12, false);
-        bullets.callAll('play', null, 'projectile3');
-      }
-
-      // bullets.animations.currentAnim.setFrame(0);
-
-      //this.game.physics.arcade.moveToPointer(bullet, 300);
-      bullet.body.velocity.y = this.direction.y * 200;
-      //bullet.body.rotate = 90 * (Math.PI / 180);
-      bullet.body.velocity.x = this.direction.x * 200;
-      bullet.scale.x = this.direction.x < 0 ? -1 : 1;
-      bullet.scale.y = this.direction.y < 0 ? -1 : 1;
-    }
-  }
-
-  /**
-   * -----------------------------------------------------------------------------------------------------------------------------
-   * Collision handlers
-   */
-
-  /**
-   * Spawn enemy
-   * @method: onCollisionPlayerEnemy
-   */
-  onCollisionPlayerMap(playerHitArea, map) {
-    //console.log('this.map hit');
-  }
-
-  /**
-   * Spawn enemy
-   * @method: onCollisionPlayerEnemy
-   */
-  onCollisionPlayerCrate(playerHitArea, map) {
-    console.log('crate collide');
-  }
-
-  /**
-   * Spawn enemy
-   * @method: onCollisionBulletCrate
-   */
-  onCollisionBulletCrate(bullet, crate) {
-    console.log('crate hit');
-
-    bullet.kill();
-    
-    crate.health -= 0.1;
-
-    if(crate.health <= 0)
-      this.createDeath(crate);
-  }
-
-  /**
-   * Spawn enemy
-   * @method: onCollisionPlayerEnemy
-   */
-  onCollisionPlayerEnemy(playerHitArea, enemies) {
-
-    //live = lives.getFirstAlive();
-
-    //if (live)
-    //{
-      //live.kill();
-    //}
-
-    // And create an explosion :)
-
-    // When the player dies
-    //if (lives.countLiving() < 1)
-    //{
-      this.player.view.kill();
-      //enemyBullets.callAll('kill');
-
-      //stateText.text=" GAME OVER \n Click to restart";
-      //stateText.visible = true;
-
-      //the "click to restart" handler
-      //this.game.input.onTap.addOnce(restart, this);
-    //}
-  }
-
-  /**
-   * On update handler
-   * @method: onCollisionAttackEnemy
-   */
-  onCollisionAttackEnemy(playerHitArea, enemy) {
-    if(!playerEnemyHits(enemy)) {
-      this.player.hitArray.push(enemy);
-      this.woundAgent(enemy, 0.2);
-    }
-  }
-
-  /**
-   * On update handler
-   * @method: onCollisionPlayerWall
-   */
-  onCollisionPlayerWall(player, wall) {
-  }
-
-  /**
-   * -----------------------------------------------------------------------------------------------------------------------------
-   * Game listeners
-   */
-
-  /**
-   * On init handler
-   * @method: onInit
-   */
-  onInit() {
-    console.log('onInit');
-
-    // Scale the game x2
-    //this.setGameScale(3);
-
-    //this.player = new Player(this.game);
-
-    // Create keys
-    //initKeys();
-  }
-
-  /**
-   * On preload handler
-   * @method: onPreload
-   */
-  onPreload() {
-    console.log('onPreload');
-    console.log('this:', this);
-
-    // Preload images
-    this.load.tilemapTiledJSON("World", TILEMAP);
-    this.load.image('tiles', TILES);
-    this.load.image('background', BACKGROUND);
-    this.load.image('ui', UI);
-    this.load.spritesheet('vicar', PLAYERV, {
-      frameWidth: 16,
-      frameHeight: 48
-    });
-    this.load.spritesheet('projectile', PROJECTILE, {
-      frameWidth: 16,
-      frameHeight: 16
-    });
-    this.load.spritesheet('crate_death', CRATE_DEATH, {
-      frameWidth: 32,
-      frameHeight: 32
-    });
-    this.load.spritesheet('wound', DEATH, {
-      frameWidth: 16,
-      frameHeight: 16
-    });
-    this.load.spritesheet('crate', CRATE, {
-      frameWidth: 16,
-      frameHeight: 32
-    });
-    //this.player.prelaod();
-  }
-
-  /**
-   * On create handler
-   * @method: onCreate
-   */
-  onCreate() {
-    console.log('onCreate');
-
-    //var tileset = this.map.addTilesetImage("tiles", "tiles");
-    //this.mapLayer = this.map.createStaticLayer("World1", tileset);
-
-    //this.map = this.add.tilemap("level");
-    var map = this.make.tilemap({ key: 'World' });
-    console.log('map', map);
-    var tileset = map.addTilesetImage('tiles');
-    console.log('tileset', tileset);
-    
-    var mapLayer = map.createDynamicLayer(0, tileset, 0, 0);
-    //var mapLayer = map.createStaticLayer(0, tileset, 0, 0);
-
-    console.log('mapLayer', mapLayer);
-
-    //groundLayer = map.createDynamicLayer('Ground Layer', groundTiles, 0, 0);
-    //coinLayer = map.createDynamicLayer('Coin Layer', coinTiles, 0, 0);
-
-    //mapLayer.setCollisionByProperty({ collides: true });
-    
-    //this.matter.world.convertTilemapLayer(mapLayer);
-
-    // This isn't totally accurate, but it'll do for now
-    //mapLayer.setCollisionBetween(54, 83);
-
-    mapLayer.setCollisionBetween(3, 18);
-    mapLayer.setCollisionBetween(20, 128);
-    mapLayer.setCollision(1);
-
-    // If we don't have slopes in our map, we can simply specify what the default colliding tile's
-    // slope ID should be. In this case, it would just be the ID for a solid rectangle, 1.
-    //this.impact.world.setCollisionMapFromTilemapLayer(layer, { defaultCollidingSlope: 1 });
-
-
-
-
-
-
-
-
-    // Set game physics
-    //this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    // this.game.stage.smoothed = false;
-
-    // Create this.map
-    //this.map = this.game.add.tilemap('level');
-    //this.map.addTilesetImage('tiles', 'tiles');
-
-    var bg = this.add.sprite(0, 0, 'background');
-    bg.fixedToCamera = true;
-
-    // Create this.map layer 1
-    //this.mapLayer = this.map.createLayer('World1');
-    //this.mapLayer.resizeWorld();
-
-    //this.map.setCollisionBetween(3, 18);
-    //this.map.setCollisionBetween(20, 128);
-    //this.map.setCollision(1);
-
-    // Create player
-    //createPlayer();
-    this.player.create();
-
-    // Create this.enemies
-    this.createEnemies();
-
-    // Create this.enemies
-    this.createObjects();
-
-    // Create UI
-    this.createUi();
-
-    // Initiate cursor controls
-    this.cursors = this.game.input.keyboard.createCursorKeys();
-  }
-
-  /**
-   * On update handler
-   * @method: onUpdate
-   */
-  onUpdate() {
-    //updatePlayer();
-
-    this.player.update();
-
-    // Check player.view / wall collisions
-    this.game.physics.arcade.collide(this.player.view, this.mapLayer, this.onCollisionPlayerMap);
-    this.game.physics.arcade.collide(this.player.view, this.enemies, this.onCollisionPlayerEnemy);
-    this.game.physics.arcade.collide(this.player.view, this.crates, this.onCollisionPlayerCrate);
-    this.game.physics.arcade.collide(this.bullets, this.crates, this.onCollisionBulletCrate);
-    //this.game.physics.arcade.collide(player.hitArea, this.enemies, onCollisionAttackEnemy);
-  }
-
-  /**
-   * On render handler
-   * 
-   * @method: onRender
-   * @return: {Void}
-   */
-  onRender() {
-    console.log('onRender');
-    if (this.debug) {
-      //this.game.debug.bodyInfo(player.view, -40, 20);
-      this.game.debug.body(this.player.view, "#ff0000", false);
-      //this.game.debug.body(player.hitArea);
-      //this.game.debug.body(crate);
-      //this.game.debug.body(crate2);
-    }
-  }
-
-  /**
-   * Initiates the game by instantiating Phaser
-   * 
-   * @method: init
-   * @param: {String} elementId
-   * @return: {Void}
-   */
-  init(elementId) {
-    console.log('init');
-    console.log('Phaser', Phaser);
-
-    var config = {
-      type: Phaser.AUTO,
-      width: 160,
-      height: 144,
-      pixelArt: true,
-      physics: {
-        default: 'arcade',
-        arcade: {
-          debug: false
-        }
-      },
-      scene: {
-        init: this.onInit,
-        preload: this.onPreload,
-        create: function () {
-          console.log('create');
-          console.log('this:', this);
-          this.onCreate();
-        },
-        update: function () {
-          //console.log('update');
-          //console.log('this:', this);
-          //this.onPreload,
-        }
-        //,
-        //create: this.onCreate,
-        //update: this.onUpdate
-      }
+    return {
+        init: init
     };
 
-    this.game = new Phaser.Game(config);
+})();
 
-    /*
-    this.game = new Phaser.Game(160, 144, Phaser.CANVAS, elementId, {
-        init: () => this.onInit(),
-        preload: () => this.onPreload(),
-        create: () => this.onCreate(),
-        update: () => this.onUpdate(),
-        render: () => this.onRender()
-    }, false, false);
-    */
-  }
+// Define the various states that the player can be in
+var PlayerState = {
+    STANDING: 'standing',
+    FALLING: 'falling',
+    LADDER: 'ladder',
+    CROUCHING: 'crouching',
+    JUMPING: 'jumping',
+    WALKING: 'walking',
+    CLIMBING: 'climbing'
+};
+
+// Store the indexes of important tiles
+var Tiles = {
+    FLOOR: 2,
+    BRICK: 11,
+    LADDER: 12,
+    LADDER_TOP: 3,
+    JUMP_THROUGH_LEFT: 7,
+    JUMP_THROUGH_TOP: 8,
+    JUMP_THROUGH_RIGHT: 9
+};
+
+/**
+ * Sets the game scale and sets pixel rendering to crisp
+ * @method setGameScale
+ * @param { Phaser.Game } game
+ * @param { Number } scale
+ * @param { Boolean } isCrisp
+ */
+function setGameScale(game, scale, isCrisp = true) {
+    game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+    game.scale.setUserScale(scale, scale);
+
+    if (isCrisp) {
+        game.renderer.renderSession.roundPixels = true;  
+
+        Phaser.Canvas.setImageRenderingCrisp(game.canvas);
+    }
 }
 
-const game = new ROBO_CATS();
-game.init('game');
+/**
+ * @method createLevel
+ */
+function createLevel() {
+
+    // Start arcade physics
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.game.physics.arcade.gravity.y = 512;
+
+    // Create tilemap
+    this.map = this.game.add.tilemap('level');
+    this.map.addTilesetImage('tilesetMain', 'tiles');
+
+    // Create layer
+    this.layerMain = this.map.createLayer('layerMain');
+    this.layerMain.resizeWorld();
+    this.layerMain.debug = this.debug;
+
+    // Set collision tiles
+    this.map.setCollision(Tiles.FLOOR, true, 'layerMain');
+    this.map.setCollision(Tiles.BRICK, true, 'layerMain');
+    this.map.setCollision(Tiles.LADDER_TOP, true, 'layerMain');
+
+    // Set jump through platform tiles
+    setLadderTopTiles.call(this, this.map, Tiles.LADDER_TOP);
+    //this.setCollisionJumpThrough(this.map, Tiles.LADDER_TOP);
+
+    // Set jump through platform tiles
+    setLadderTiles.call(this, this.map, Tiles.LADDER);
+
+    // Set jump through platform tiles
+    setCollisionJumpThrough(this.map, Tiles.JUMP_THROUGH_LEFT);
+    setCollisionJumpThrough(this.map, Tiles.JUMP_THROUGH_TOP);
+    setCollisionJumpThrough(this.map, Tiles.JUMP_THROUGH_RIGHT);
+}
+
+/**
+ * @method createPlayer
+ */
+function createPlayer() {
+
+    // Create player sprite
+    var sprite = this.game.add.sprite(2 * 16, 11 * 16, 'player');
+
+    // Create player
+    this.player = new Player(sprite, this.keys, this.game.physics.arcade, this.layerMain);
     
+    // Enable physics
+    this.game.physics.enable(sprite);
+
+    // Init body
+    this.player.initBody();
+
+    // Set camera to follow player
+    this.game.camera.follow(this.player.getSprite());
+}
+
+/**
+ * Sets a top collision for the jump through platforms
+ * @method setCollisionJumpThrough
+ * @param { Phaser.Tilemap } map
+ * @param { Number } index
+ */
+function setCollisionJumpThrough(map, index) {
+    for (var x = 0; x < map.width; x++) {
+        for (var y = 0; y < map.height; y++) {
+            var tile = map.getTile(x, y);
+
+            if (tile.index === index) {
+                tile.setCollision(false, false, true, false);
+            }
+        }
+    }
+}
+
+/**
+ * Sets a top collision for the jump through platforms
+ *
+ * @method setLadderTopTiles    
+ * @param { Phaser.Tilemap } map
+ * @param { Number } index
+ */
+function setLadderTopTiles(map, index) {
+    for (var x = 0; x < map.width; x++) {
+        for (var y = 0; y < map.height; y++) {
+            var tile = map.getTile(x, y);
+
+            if (tile.index === index) {
+                tile.setCollision(false, false, true, false);
+                tile.collisionCallbackContext = this;
+                tile.collisionCallback = function(sprite, tile) {
+                    var delta = new Phaser.Point( 
+                        Math.abs(sprite.position.x - tile.worldX - 8),
+                        Math.abs(sprite.position.y - tile.worldY + 16)
+                    );
+                    console.log('collisionCallback', delta.y);
+
+                    if (delta.x <= 8 && delta.y > 0) {
+                        this.player.setOverlapLadder(true);
+                        //sprite.data.isOnLadderTop = true;
+
+                        if (this.keys.down.isDown) {
+                            //tile.setCollision(false, false, false, false);
+                        }
+                    }
+
+                    if (delta.x <= 8 && delta.y == 0) {
+                        //this.player.setOverlapLadder(true);
+                        //sprite.data.isOnLadderTop = true;
+                        console.log('====');
+
+                        if (this.keys.down.isDown) {
+                        this.player.setOverlapLadder(true);
+                            tile.setCollision(false, false, false, false);
+                        }
+                    }
+                    //console.log('this', this);
+                    //console.log('d', sprite);   
+                    //console.log('tile', tile);
+                };
+            }
+        }
+    }
+};
+
+/**
+ * Sets a top collision for the jump through platforms
+ *
+ * @method setLadderTopTiles    
+ * @param { Phaser.Tilemap } map
+ * @param { Number } index
+ */
+function getLadderTopCollide(sprite, map) {
+    for (var x = 0; x < map.width; x++) {
+        for (var y = 0; y < map.height; y++) {
+            var tile = map.getTile(x, y);
+
+            if (tile.index === Tiles.LADDER_TOP) {
+                tile.setCollision(false, false, true, false);
+
+                var delta = new Phaser.Point( 
+                    Math.abs(sprite.position.x - tile.worldX - 8),
+                    Math.abs(sprite.position.y - tile.worldY + 16)
+                );
+
+                if (delta.x <= 8 && delta.y > 0) {
+                    this.player.setOverlapLadder(true);
+                    //sprite.data.isOnLadderTop = true;
+
+                    if (this.keys.down.isDown) {
+                        //tile.setCollision(false, false, false, false);
+                    }
+                }
+
+                if (delta.x <= 8 && delta.y == 0) {
+                    //this.player.setOverlapLadder(true);
+                    //sprite.data.isOnLadderTop = true;
+                    console.log('====');
+
+                    if (this.keys.down.isDown) {
+                    this.player.setOverlapLadder(true);
+                        tile.setCollision(false, false, false, false);
+                    }
+                }
+
+
+
+
+                tile.collisionCallbackContext = this;
+                tile.collisionCallback = function(sprite, tile) {
+                    var delta = new Phaser.Point( 
+                        Math.abs(sprite.position.x - tile.worldX - 8),
+                        Math.abs(sprite.position.y - tile.worldY + 16)
+                    );
+                    console.log('collisionCallback', delta.y);
+
+                    if (delta.x <= 8 && delta.y > 0) {
+                        this.player.setOverlapLadder(true);
+                        //sprite.data.isOnLadderTop = true;
+
+                        if (this.keys.down.isDown) {
+                            //tile.setCollision(false, false, false, false);
+                        }
+                    }
+
+                    if (delta.x <= 8 && delta.y == 0) {
+                        //this.player.setOverlapLadder(true);
+                        //sprite.data.isOnLadderTop = true;
+                        console.log('====');
+
+                        if (this.keys.down.isDown) {
+                        this.player.setOverlapLadder(true);
+                            tile.setCollision(false, false, false, false);
+                        }
+                    }
+                    //console.log('this', this);
+                    //console.log('d', sprite);   
+                    //console.log('tile', tile);
+                };
+            }
+        }
+    }
+};
+
+/**
+ * @method setLadderTiles
+ * @param { Phaser.Tilemap } map
+ * @param { Number } index
+ */
+function setLadderTiles(map, index) {
+    for (var x = 0; x < map.width; x++) {
+        for (var y = 0; y < map.height; y++) {
+            var tile = map.getTile(x, y);
+
+            if (tile.index === index) {
+                tile.collisionCallbackContext = this;
+                tile.collisionCallback = function(sprite, tile) {
+                    var delta = new Phaser.Point(
+                        Math.abs(sprite.position.x - tile.worldX - 8),
+                        Math.abs(sprite.position.y - tile.worldY + 16)
+                    );
+
+                    if (delta.x <= 8) {
+                        sprite.data.isOnLadderTile = true;
+                        //this.player.setOverlapLadder(true);
+                    }
+                };
+            }
+        }
+    }
+};
+
+/**
+ * @method handleCollide
+ * @param { Phaser.Sprite } sprite
+ * @param { Phaser.Tile } tile
+ */
+function handleCollide(sprite, tile) {
+    // handleCollide
+};
+
+/**
+ * @method handleOverlap
+ * @param { Phaser.Sprite } sprite
+ * @param { Phaser.Tile } tile
+ */
+function handleOverlap(sprite, tile) {
+    /*
+    var delta = new Phaser.Point(
+        Math.abs(sprite.position.x - tile.worldX - 8),
+        Math.abs(sprite.position.y - tile.worldY + 16)
+    );
+    
+    switch (tile.index) {
+        case Tiles.LADDER_TOP:
+            if (delta.x <= 8 && delta.y <= 2) {
+                sprite.data.isOnLadderTop = true;
+            }
+        case Tiles.LADDER:
+            if (delta.x <= 8) {
+                sprite.data.isOnLadderTile = true;
+            }
+            break;
+        default:
+            break;
+    }
+    */
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Game
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * Game
+ *
+ * @constructor
+ */
+Game = function() {
+    this.debug = false;
+    this.map = null;
+    this.layerMain = null;
+    this.player = null;
+    this.keys = null;
+};
+
+/**
+ * @method init
+ */
+Game.prototype.init = function() {
+
+    // Create keys
+    this.keys = {
+        jump: this.game.input.keyboard.addKey(Phaser.Keyboard.W),
+        up: this.game.input.keyboard.addKey(Phaser.Keyboard.UP),
+        down: this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
+        left: this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+        right: this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+    };
+
+    setGameScale(this.game, 2, true);
+};
+
+/**
+ * @method preload
+ */
+Game.prototype.preload = function() {
+
+    // Load tilemap
+    this.game.load.tilemap('level', 'js/tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+
+    // Load tiles image
+    this.game.load.image('tiles', 'images/tiles.gif');
+
+    // Load player spritesheet
+    this.game.load.spritesheet('player', 'images/player.gif', 16, 32);
+};
+
+/**
+ * @method create
+ */
+Game.prototype.create = function() {
+    createLevel.call(this);
+    createPlayer.call(this);
+};
+
+/**
+ * @method update
+ */
+Game.prototype.update = function() {
+
+    // Call player preUpdate
+    //.player.preUpdate();
+
+    // Call physics overlap and collision
+    //this.game.physics.arcade.overlap(this.player.sprite, this.layerMain, handleOverlap.bind(this));
+   // this.game.physics.arcade.collide(this.player.sprite, this.layerMain, handleCollide.bind(this));
+
+    // Call player update
+    this.player.update();
+}
+
+/**
+ * @method render
+ */
+Game.prototype.render = function() {
+    if (this.debug) {
+        this.game.debug.body(this.player.sprite);
+    }
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Player
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * Player
+ *
+ * @constructor
+ * @param { Phaser.Sprite } sprite
+ * @param { Object } keys
+ */
+Player = function(sprite, keys, physics, collisionLayer) {
+
+    // Keys
+    this.physics = physics;
+
+    // Keys
+    this.collisionLayer = collisionLayer;
+
+    // Keys
+    this.keys = keys;
+
+    // Direction the player is facing (1 or -1)
+    this.facing = 1;
+
+    // Walking speed of the player
+    this.speed = 96;
+
+    // Climbing speed of the player
+    this.speedClimbing = 64;
+
+    // Strength
+    this.strength = 0.1;
+
+    // Current state
+    this.state = PlayerState.STANDING;
+
+    // Jump timer
+    this.jumpTimer = null;
+
+    // Overlapping ladder
+    //this.overlapLadder = false;
+
+    // Sprite
+    this.sprite = sprite;
+
+    // Give sprite full health
+    this.sprite.health = 1;
+
+    // Track whether sprite is on a ladder tile
+    this.sprite.data.isOnLadderTile = false;
+    this.sprite.data.isOnLadderTop = false;
+
+    // Set anchor to center
+    this.sprite.anchor.setTo(0.5, 0.5);
+
+    // Animations
+    this.sprite.animations.add('stand', [0]);
+    this.sprite.animations.add('walk', [0, 1, 2, 1], 12, true);
+    this.sprite.animations.add('jump', [2]);
+    this.sprite.animations.add('fall', [2]);
+    this.sprite.animations.add('crouch', [3]);
+    this.sprite.animations.add('climb', [4, 5], 12, true);
+    this.sprite.animations.add('ladder', [4]);
+};
+
+/**
+ * @method initBody
+ */
+Player.prototype.initBody = function() {
+    setBodySize(this.sprite.body);
+
+    this.sprite.body.bounce.y = 0;
+    this.sprite.body.collideWorldBounds = true;
+};
+
+/**
+ * @method initBody
+ */
+Player.prototype.getSprite = function() {
+    return this.sprite;
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Update
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * @method update
+ */
+Player.prototype.update = function() {
+    this.updateCollisions();
+    this.updateState();
+    this.updateVelocity();
+};
+
+/**
+ * @method update
+ */
+Player.prototype.handleCollision = function(sprite1, sprite2) {
+    console.log('sprite2', sprite2);
+};
+
+
+/**
+ * @method update
+ */
+Player.prototype.updateCollisions = function() {
+    this.sprite.data.isOnLadderTile = false;
+    this.sprite.data.isOnLadderTop = false;
+
+    // Call player preUpdate
+    //this.player.preUpdate();
+
+    // Call physics overlap and collision
+    //this.game.physics.arcade.overlap(this.player.sprite, this.layerMain, handleOverlap.bind(this));
+   this.physics.collide(this.sprite, this.collisionLayer, this.handleCollision.bind(this));
+};
+
+/**
+ * @method updateState
+ */
+Player.prototype.updateState = function() {
+
+    // Check for state changes
+    switch (this.state) {
+        case PlayerState.FALLING:
+            if (this.isClimbing()) {
+                this.setState(PlayerState.CLIMBING);
+            } else if (this.isOnFloor()) {
+                this.setState(PlayerState.STANDING);
+            }
+            break;
+        case PlayerState.STANDING:
+            if (this.isJumping()) {
+                this.setState(PlayerState.JUMPING);
+            } else if (this.isWalking()) {
+                this.setState(PlayerState.WALKING);
+            } else if (this.isClimbing()) {
+                this.setState(PlayerState.CLIMBING);
+            } else if (this.isOnLadder()) {
+                this.setState(PlayerState.LADDER);
+            } else if (this.isCrouching()) {
+                this.setState(PlayerState.CROUCHING);
+            } else if (this.isFalling()) {
+                this.setState(PlayerState.FALLING);
+            }
+            break;
+        case PlayerState.JUMPING:
+            if (this.isOnFloor()) {
+                this.setState(PlayerState.STANDING);
+            }
+            break;
+        case PlayerState.WALKING:
+            if (this.isJumping()) {
+                this.setState(PlayerState.JUMPING);
+            } else if (this.isClimbing()) {
+                this.setState(PlayerState.CLIMBING);
+            } else if (this.isOnLadder()) {
+                this.setState(PlayerState.LADDER);
+            } else if (this.isFalling()) {
+                this.setState(PlayerState.FALLING);
+            } else if (!this.isWalking()) {
+                this.setState(PlayerState.STANDING);
+            }
+            break;
+        case PlayerState.CLIMBING:
+            if (this.isJumping()) {
+                this.setState(PlayerState.JUMPING);
+            } else if (!this.isClimbing() && this.isOnLadder()) {
+                this.setState(PlayerState.LADDER);
+            } else if (!this.isClimbing()) {
+                this.setState(PlayerState.STANDING);
+            }
+            break;
+        case PlayerState.LADDER:
+            if (this.isJumping()) {
+                this.setState(PlayerState.JUMPING);
+            } else if (this.isClimbing()) {
+                this.setState(PlayerState.CLIMBING);
+            } else if (!this.isOnLadder()) {
+                this.setState(PlayerState.FALLING);
+            }
+            break;
+        case PlayerState.CROUCHING:
+            if (this.isJumping()) {
+                this.setState(PlayerState.JUMPING);
+            } else if (this.isClimbing()) {
+                this.setState(PlayerState.CLIMBING);
+            } else if (!this.isCrouching()) {
+                this.setState(PlayerState.STANDING);
+            } else if (this.isFalling()) {
+                this.setState(PlayerState.FALLING);
+            }
+            break;
+        default:
+            break;
+    }
+};
+
+/**
+ * @method updateVelocity
+ */
+Player.prototype.updateVelocity = function() {
+    var direction = new Phaser.Point(
+        this.keys.left.isDown ? -1 : this.keys.right.isDown ? 1 : 0,
+        this.keys.up.isDown ? -1 : this.keys.down.isDown ? 1 : 0
+    );
+
+    // Set direction
+    this.sprite.scale.x = this.facing = direction.x === 0 ? this.facing : direction.x;
+
+    // Update velocity
+    switch (this.state) {
+        case PlayerState.CLIMBING:
+            this.sprite.body.velocity.x = 0;
+            this.sprite.body.velocity.y = direction.y * this.speedClimbing;
+            this.sprite.x = this.getLockX(this.sprite.x);
+            break;
+        case PlayerState.LADDER:
+            this.sprite.body.velocity.x = 0;
+            this.sprite.body.velocity.y = 0;
+            this.sprite.x = this.getLockX(this.sprite.x);
+            break;
+        case PlayerState.WALKING:
+            this.sprite.body.velocity.y = 0;
+        case PlayerState.FALLING:
+        case PlayerState.JUMPING:
+            this.sprite.body.velocity.x = direction.x * this.speed;
+            break;
+        case PlayerState.STANDING:
+        case PlayerState.CROUCHING:
+            this.sprite.body.velocity.x = 0;
+            this.sprite.body.velocity.y = 0;
+            break;
+        default:
+            break;
+    }
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Setters
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * @method setState
+ * @param { String } state
+ */
+Player.prototype.setState = function(state) {
+    console.log('[PlayerState]: ' + state);
+
+    this.state = state;
+
+    switch (this.state) {
+        case PlayerState.FALLING:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(false);
+            this.setAnimation('fall');
+            break;
+        case PlayerState.STANDING:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(false);
+            this.setAnimation('stand');
+            this.endJump();
+            break;
+        case PlayerState.JUMPING:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(false);
+            this.setAnimation('jump');
+            this.startJump();
+            break;
+        case PlayerState.WALKING:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(false);
+            this.setAnimation('walk');
+            break;
+        case PlayerState.CLIMBING:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(true);
+            this.setAnimation('climb');
+            break;
+        case PlayerState.LADDER:
+            setBodySize(this.sprite.body);
+            this.setOnLadder(true);
+            this.setAnimation('ladder');
+            break;
+        case PlayerState.CROUCHING:
+            setBodySize(this.sprite.body, 'small');
+            this.setOnLadder(false);
+            this.setAnimation('crouch');
+            break;
+        default:
+            break;
+    }
+};
+
+/**
+ * @method setBodySize
+ * @param { String } size
+ */
+function setBodySize(body, size = 'large') {
+    switch (size) {
+
+        // For crouching and crawling
+        case 'small':
+            body.setSize(16, 16, 0, 16);
+            break;
+
+        // Default body size
+        case 'large':
+        default:
+            body.setSize(16, 24, 0, 8);
+            break;
+    }
+}
+
+/**
+ * @method setGravity
+ * @param { Boolean } bool
+ */
+Player.prototype.setGravity = function(bool) {
+    this.sprite.body.allowGravity = bool;
+};
+
+/**
+ * @method setAnimation
+ * @param { String } anim
+ */
+Player.prototype.setAnimation = function(anim) {
+    this.sprite.animations.play(anim);
+};
+
+/**
+ * @method setOnLadder
+ * @param { Boolean } bool
+ */
+Player.prototype.setOnLadder = function(bool) {
+    this.setGravity(!bool);
+    //this.setLadderTopsCollide(!bool);
+};
+
+/**
+ * @method setOnLadder
+ * @param { Boolean } bool
+ */
+Player.prototype.setOverlapLadder = function(bool) {
+    this.sprite.data.isOnLadderTile = bool;
+};
+
+/**
+ * @method setLadderTopsCollide
+ * @param { Boolean } bool
+ */
+Player.prototype.setLadderTopsCollide = function(bool) {
+    var map = this.sprite.game.world.children[0].map;
+
+    this.setTileCollides(map, Tiles.LADDER_TOP, bool);
+};
+
+/**
+ * @method setTileCollides
+ * @param { Phaser.Tilemap } map
+ * @param { Number } index
+ * @param { Boolean } bool
+ */
+Player.prototype.setTileCollides = function(map, index, bool) {
+    for (var x = 0; x < map.width; x++) {
+        for (var y = 0; y < map.height; y++) {
+            var tile = map.getTile(x, y);
+
+            if (tile.index === index) {
+                tile.setCollision(bool, bool, bool, bool);
+            }
+        }
+    }
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Getters
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * @method getState
+ * @return { String }
+ */
+Player.prototype.getState = function() {
+    return this.state;
+};
+
+/**
+ * @method getLockX
+ * @param { Number } x
+ * @return { Number }
+ */
+Player.prototype.getLockX = function(x) {
+    return Math.floor(x / 16) * 16 + 8;
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Jump
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * @method startJump
+ */
+Player.prototype.startJump = function() {
+    this.sprite.body.velocity.y = -224;
+    this.jumpTimer = this.sprite.game.time.events.add(Phaser.Timer.SECOND * 0.5, function() {
+        this.setState(PlayerState.FALLING);
+    }, this);
+};
+
+/**
+ * @method endJump
+ */
+Player.prototype.endJump = function() {
+     this.sprite.game.time.events.remove(this.jumpTimer);
+};
+
+/*
+ * --------------------------------------------------------------------------------
+ * Check state
+ * --------------------------------------------------------------------------------
+ */
+
+/**
+ * @method isWalking
+ * @return { Boolean }
+ */
+Player.prototype.isWalking = function() {
+    return this.isOnFloor() && (this.keys.left.isDown || this.keys.right.isDown);
+};
+
+/**
+ * @method isJumping
+ * @return { Boolean }
+ */
+Player.prototype.isJumping = function() {
+    return (this.isOnFloor() || this.sprite.data.isOnLadderTile) && this.keys.jump.isDown;
+};
+
+/**
+ * @method isCrouching
+ * @return { Boolean }
+ */
+Player.prototype.isCrouching = function() {
+    return this.isOnFloor() && this.keys.down.isDown;
+};
+
+/**
+ * @method isFalling
+ * @return { Boolean }
+ */
+Player.prototype.isFalling = function() {
+    return !this.isOnFloor();
+};
+
+/**
+ * @method isClimbing
+ * @return { Boolean }
+ */
+Player.prototype.isClimbing = function() {
+    return this.isTryingToClimbUp() || this.isTryingToClimbDown() || this.isTryingToClimb();
+};
+
+/**
+ * @method isTryingToClimb
+ * @return { Boolean }
+ */
+Player.prototype.isTryingToClimb = function() {
+    return this.isOnLadder() && (this.keys.up.isDown || this.keys.down.isDown);
+};
+
+/**
+ * @method isTryingToClimbDown
+ * @return { Boolean }
+ */
+Player.prototype.isTryingToClimbDown = function() {
+    //return this.sprite.data.isOnLadderTop && this.keys.down.isDown;
+};
+
+/**
+ * @method isTryingToClimbUp
+ * @return { Boolean }
+ */
+Player.prototype.isTryingToClimbUp = function() {
+    return this.sprite.data.isOnLadderTile && this.isOnFloor() && !this.sprite.data.isOnLadderTop && this.keys.up.isDown;
+    //return this.sprite.data.isOnLadderTile && this.isOnFloor() && this.keys.up.isDown;
+};
+
+/**
+ * @method isOnLadder
+ * @return { Boolean }
+ */
+Player.prototype.isOnLadder = function() {
+    return this.sprite.data.isOnLadderTile && !this.isOnFloor();
+};
+
+/**
+ * @method isOnFloor
+ * @return { Boolean }
+ */
+Player.prototype.isOnFloor = function() {
+    return this.sprite.body.onFloor();
+};
