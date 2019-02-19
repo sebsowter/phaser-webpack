@@ -1,7 +1,7 @@
 {
-  "name": "robo-cats",
+  "name": "phaser-webpack",
   "version": "1.0.0",
-  "description": "Robo Cats",
+  "description": "Phaser Webpack",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,19 +10,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SebSowter/robo-cats.git"
+    "url": "git+https://github.com/sebsowter/phaser-webpack.git"
   },
   "author": "Seb Sowter",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SebSowter/robo-cats/issues"
+    "url": "https://github.com/sebsowter/phaser-webpack/issues"
   },
   "babel": {
     "presets": [
       "@babel/preset-env"
     ]
   },
-  "homepage": "https://github.com/SebSowter/robo-cats#readme",
+  "homepage": "https://github.com/sebsowter/phaser-webpack#readme",
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
