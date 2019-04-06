@@ -67,7 +67,8 @@ export default class MarioScene extends Phaser.Scene {
     //const tileset = map.addTilesetImage('tiles');
     console.log('tileset', tileset);
     this.layer = map.createDynamicLayer(0, tileset, 0, 0);
-    //this.mapLayer.setCollisionBetween(3, 64);
+    this.layer.setCollision(2);
+    this.layer.setCollision(8);
     console.log('this.layer', this.layer);
 
     //this.player = new Player(this, 32, 32, this.layer, this.enemiesGroup);
