@@ -30,7 +30,7 @@ export class Keys {
   }
 
   get isSpace() {
-    return this.keys.space.isDown;
+    return this.keys.up.isDown || this.keys.W.isDown || this.keys.space.isDown;
   }
 }
   
@@ -168,7 +168,7 @@ export default class MarioScene extends Phaser.Scene {
     switch (this.player.state) {
       case PlayerState.STANDING:
         if (isJumping()) {
-            this.startJump();
+          this.startJump();
           //this.player.setState(PlayerState.JUMPING);
         } else if (isWalking()) {
           this.player.setState(PlayerState.WALKING);
@@ -180,7 +180,7 @@ export default class MarioScene extends Phaser.Scene {
         break;
       case PlayerState.WALKING:
         if (isJumping()) {
-            this.startJump();
+          this.startJump();
           //this.player.setState(PlayerState.JUMPING);
         } else if (isFalling()) {
           this.player.setState(PlayerState.FALLING);
@@ -190,7 +190,7 @@ export default class MarioScene extends Phaser.Scene {
         break;
       case PlayerState.CROUCHING:
         if (isJumping()) {
-            this.startJump();
+          this.startJump();
           //this.player.setState(PlayerState.JUMPING);
         } else if (isFalling()) {
           this.player.setState(PlayerState.FALLING);
