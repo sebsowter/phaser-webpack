@@ -1,5 +1,13 @@
 import Phaser from 'phaser';
 
+const PlayerState = {
+  STANDING: 0,
+  FALLING: 1,
+  CROUCHING: 2,
+  JUMPING: 3,
+  WALKING: 4
+};
+
 export class Keys {
   constructor(scene) {
     this.keys = scene.input.keyboard.addKeys('W,A,S,D,up,left,down,right,space');
@@ -49,8 +57,8 @@ export default class MarioScene extends Phaser.Scene {
 
     // Load player spritesheet
     this.load.spritesheet('player', './assets/images/player.gif', {
-        frameWidth: 16,
-        frameHeight: 32
+      frameWidth: 16,
+      frameHeight: 32
     });
   }
   
@@ -137,28 +145,31 @@ export default class MarioScene extends Phaser.Scene {
     camera.startFollow(this.player);
   }
   
+  startJump() {
+    this.player.setState(PlayerState.JUMPING);
+    this.player.body.velocity.y = -224;
+    this.jumpTimer = this.time.delayedCall(500, () => {
+      this.player.setState(PlayerState.FALLING);
+    });
+  }
+  
   update() {
-    const PlayerState = {
-        STANDING: 0,
-        FALLING: 1,
-        CROUCHING: 2,
-        JUMPING: 3,
-        WALKING: 4
-    };
     const isOnFloor = () => {
-        //console.log('this.player', this.player);
-        this.player.body.onFloor();
+      //console.log('this.player', this.player);
+      return this.player.body.onFloor();
     }
     const isWalking = () => isOnFloor() && (this.keys.isLeft || this.keys.isRight);
     const isJumping = () => isOnFloor() && this.keys.isSpace;
     const isCrouching = () => !isOnFloor() && this.keys.isDown;
     const isFalling = () => !isOnFloor();
+    console.log('isWalking', this.player.state);
 
     // Update player state
     switch (this.player.state) {
       case PlayerState.STANDING:
         if (isJumping()) {
-          this.player.setState(PlayerState.JUMPING);
+            this.startJump();
+          //this.player.setState(PlayerState.JUMPING);
         } else if (isWalking()) {
           this.player.setState(PlayerState.WALKING);
         } else if (isCrouching()) {
@@ -169,7 +180,8 @@ export default class MarioScene extends Phaser.Scene {
         break;
       case PlayerState.WALKING:
         if (isJumping()) {
-          this.player.setState(PlayerState.JUMPING);
+            this.startJump();
+          //this.player.setState(PlayerState.JUMPING);
         } else if (isFalling()) {
           this.player.setState(PlayerState.FALLING);
         } else if (!isWalking()) {
@@ -178,7 +190,8 @@ export default class MarioScene extends Phaser.Scene {
         break;
       case PlayerState.CROUCHING:
         if (isJumping()) {
-          this.player.setState(PlayerState.JUMPING);
+            this.startJump();
+          //this.player.setState(PlayerState.JUMPING);
         } else if (isFalling()) {
           this.player.setState(PlayerState.FALLING);
         } else if (!isCrouching()) {
@@ -204,8 +217,9 @@ export default class MarioScene extends Phaser.Scene {
     //this.player.scale.x = this.facing = direction.x === 0 ? this.facing : direction.x;
 
     // Update velocity
-    switch (this.state) {
+    switch (this.player.state) {
       case PlayerState.WALKING:
+      console.log('direction', direction.x );
         this.player.body.velocity.y = 0;
       case PlayerState.FALLING:
       case PlayerState.JUMPING:
