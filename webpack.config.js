@@ -70,7 +70,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       filename: 'index.html',
-      title: 'Robo Cats'
+      title: 'Phaser Game'
     })
   ]
 };
