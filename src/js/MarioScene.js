@@ -32,17 +32,16 @@ export default class MarioScene extends Phaser.Scene {
         key: 'World1'
     });
     const tileset = map.addTilesetImage('tiles');
-    this.layer = map.createDynamicLayer(0, tileset, 0, 0);
-    this.layer.setCollision(2);
-    this.layer.setCollision(8);
+    const layer = map.createDynamicLayer(0, tileset, 0, 0);
+    layer.setCollision(2);
+    layer.setCollision(8);
 
-    this.player1 = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
-
-    this.physics.add.collider(this.player1, this.layer);
+    this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
+    this.physics.add.collider(this.mario, layer);
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    camera.startFollow(this.player1);
+    camera.startFollow(this.mario);
   }
 
   /**
@@ -50,6 +49,6 @@ export default class MarioScene extends Phaser.Scene {
    */
   update() {
     console.log('u');
-    this.player1.update();
+    this.mario.update();
   }
 }
