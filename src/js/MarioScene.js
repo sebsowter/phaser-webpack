@@ -41,15 +41,11 @@ export default class MarioScene extends Phaser.Scene {
     // Create Mario sprite and add collider to dynamic layer
     this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
     this.physics.add.collider(this.mario, layer);
+    //this.mario.body.setCollideWorldBounds(true);
 
     // Get main camera and set to follow Mario
     const camera = this.cameras.main;
     camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
     camera.startFollow(this.mario);
-  }
-  
-  update() {
-    console.log('u');
-    this.mario.update();
   }
 }

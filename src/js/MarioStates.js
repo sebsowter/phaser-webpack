@@ -1,7 +1,7 @@
 /**
  * MarioStates
  * 
- * export default {Object}
+ * @type {Object} 
  */
 export default {
   STANDING: 0,

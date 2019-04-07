@@ -20,6 +20,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     // Set body size
     this.body.setSize(16, 24);
     this.body.setOffset(0, 8);
+    //this.body.setCollideWorldBounds(true);
     
     // Set custom properties
     this.setData('facingRight', true);
@@ -28,53 +29,37 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     
     // Creat Animations
     this.scene.anims.create({
-      key: "stand",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 0,
-        end: 0
-      }),
+      key: 'stand',
       frameRate: 0,
-      repeat: -1
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 0
+      })
     });
 
     this.scene.anims.create({
-      key: "walk",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 0,
-        end: 2
-      }),
+      key: 'walk',
       frameRate: 12,
-      repeat: -1
-    });
-
-    this.scene.anims.create({
-      key: "jump",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 2,
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 0,
         end: 2
       }),
-      frameRate: 0,
       repeat: -1
+    }); 
+
+    this.scene.anims.create({
+      key: 'jump',
+      frameRate: 0,
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 2
+      })
     });
 
     this.scene.anims.create({
-      key: "fall",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 2,
-        end: 2
-      }),
+      key: 'crouch',
       frameRate: 0,
-      repeat: -1
-    });
-
-    this.scene.anims.create({
-      key: "crouch",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 3,
-        end: 3
-      }),
-      frameRate: 0,
-      repeat: -1
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 3
+      })
     });
   }
 
@@ -84,8 +69,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
    * @method update
    * @return {Void} 
    */
-  update() {
-    console.log('update');
+  preUpdate() {
     this.updateState();
     this.updateDirection();
     this.updateVelocity();
@@ -222,7 +206,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         break;
       case MarioStates.FALLING:
         this.setState(MarioStates.FALLING);
-        this.play('fall');
+        this.play('jump');
         break;
       default:
         this.setState(MarioStates.STANDING);
