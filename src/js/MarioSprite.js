@@ -17,6 +17,8 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
 
+    console.log('this.scene.physics.world', this.scene.physics.world);
+
     // Set body size
     this.body.setSize(16, 24);
     this.body.setOffset(0, 8);
@@ -38,10 +40,11 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     this.scene.anims.create({
       key: 'walk',
+      frameRate: 12,
       frames: this.scene.anims.generateFrameNumbers('player', {
-        frames: [2, 1, 2]
+        start: 0,
+        end: 2
       }),
-      frameRate: 24,
       repeat: -1
     }); 
 
@@ -55,10 +58,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     this.scene.anims.create({
       key: 'crouch',
-      frameRate: 24,
+      frameRate: 0,
       frames: this.scene.anims.generateFrameNumbers('player', {
-        start: 3,
-        end: 5
+        start: 3
       })
     });
 
@@ -75,12 +77,21 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   }
 
   /**
+   * preUpdate
+   * 
+   * @method update
+   * @return {Void} 
+   */
+  //preUpdate() {
+  //}
+
+  /**
    * Update
    * 
    * @method update
    * @return {Void} 
    */
-  preUpdate() {
+  update() {
     this.updateState();
     this.updateDirection();
     this.updateVelocity();
@@ -205,11 +216,11 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       case MarioStates.WALKING:
         console.log('walk');
         this.setState(MarioStates.WALKING);
-        this.play('crouch');
+        this.play('walk', true);
         break;
       case MarioStates.CROUCHING:
         this.setState(MarioStates.CROUCHING);
-        this.play('crouch');
+        this.play('crouch', true);
         break;
       case MarioStates.FALLING:
         this.setState(MarioStates.FALLING);

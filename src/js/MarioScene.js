@@ -43,9 +43,15 @@ export default class MarioScene extends Phaser.Scene {
     this.physics.add.collider(this.mario, layer);
     //this.mario.body.setCollideWorldBounds(true);
 
+    console.log('tilemap.widthInPixels', tilemap.widthInPixels);
+
     // Get main camera and set to follow Mario
     const camera = this.cameras.main;
     camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
     camera.startFollow(this.mario);
+  }
+
+  update() {
+    this.mario.update();
   }
 }
