@@ -1,3 +1,8 @@
+/**
+ * MarioInputs
+ * 
+ * export default {Class}
+ */
 export default class MarioInputs {
   constructor(scene) {
     this.keys = scene.input.keyboard.addKeys('W,A,S,D,up,left,down,right,space');

@@ -3,12 +3,11 @@ import MarioSprite from './MarioSprite';
 
 /**
  * MarioScene
+ * 
+ * class extends {Phaser.Scene}
  */
 export default class MarioScene extends Phaser.Scene {
-
-  /**
-   * preload
-   */
+  
   preload() {
 
     // Load tilemap
@@ -24,29 +23,31 @@ export default class MarioScene extends Phaser.Scene {
     });
   }
   
-  /**
-   * create
-   */
   create() {
-    const map = this.make.tilemap({
+
+    // Create tilemap
+    const tilemap = this.make.tilemap({
         key: 'World1'
     });
-    const tileset = map.addTilesetImage('tiles');
-    const layer = map.createDynamicLayer(0, tileset, 0, 0);
+
+    // Create tileset
+    const tileset = tilemap.addTilesetImage('tiles');
+    
+    // Create dynamic layer and set collisions
+    const layer = tilemap.createDynamicLayer(0, tileset, 0, 0);
     layer.setCollision(2);
     layer.setCollision(8);
 
+    // Create Mario sprite and add collider to dynamic layer
     this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
     this.physics.add.collider(this.mario, layer);
 
+    // Get main camera and set to follow Mario
     const camera = this.cameras.main;
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
     camera.startFollow(this.mario);
   }
-
-  /**
-   * update
-   */
+  
   update() {
     console.log('u');
     this.mario.update();

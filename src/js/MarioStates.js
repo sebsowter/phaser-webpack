@@ -1,3 +1,8 @@
+/**
+ * MarioStates
+ * 
+ * export default {Object}
+ */
 export default {
   STANDING: 0,
   FALLING: 1,
