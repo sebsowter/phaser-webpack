@@ -39,7 +39,7 @@ export default class MarioScene extends Phaser.Scene {
     layer.setCollision(8);
 
     // Create Mario sprite and add collider to dynamic layer
-    this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
+    this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player');
     this.physics.add.collider(this.mario, layer);
     //this.mario.body.setCollideWorldBounds(true);
 

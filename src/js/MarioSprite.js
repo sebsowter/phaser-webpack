@@ -38,11 +38,10 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     this.scene.anims.create({
       key: 'walk',
-      frameRate: 12,
       frames: this.scene.anims.generateFrameNumbers('player', {
-        start: 0,
-        end: 2
+        frames: [2, 1, 2]
       }),
+      frameRate: 24,
       repeat: -1
     }); 
 
@@ -56,11 +55,23 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     this.scene.anims.create({
       key: 'crouch',
-      frameRate: 0,
+      frameRate: 24,
       frames: this.scene.anims.generateFrameNumbers('player', {
-        start: 3
+        start: 3,
+        end: 5
       })
     });
+
+    this.actions = {
+      jump: () => {
+        this.setState(MarioStates.JUMPING);
+        this.play('jump');
+        this.body.velocity.y = this.getData('jumpVelocity');
+        this.jumpTimer = this.scene.time.delayedCall(500, () => {
+          this.switchState(MarioStates.FALLING);
+        });
+      }
+    }
   }
 
   /**
@@ -189,16 +200,12 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   switchState(state) {
     switch (state) {
       case MarioStates.JUMPING:
-        this.setState(MarioStates.JUMPING);
-        this.play('jump');
-        this.body.velocity.y = this.getData('jumpVelocity');
-        this.jumpTimer = this.scene.time.delayedCall(500, () => {
-          this.switchState(MarioStates.FALLING);
-        });
+        this.actions.jump();
         break;
       case MarioStates.WALKING:
+        console.log('walk');
         this.setState(MarioStates.WALKING);
-        this.play('walk');
+        this.play('crouch');
         break;
       case MarioStates.CROUCHING:
         this.setState(MarioStates.CROUCHING);
