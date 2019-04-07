@@ -1,8 +1,8 @@
 /**
- * Phaser platformer prototype, with ladders
+ * Phaser 3 Webpack Boilerplate
  *
  * @author Seb Sowter
- * https://github.com/sebsowter/phaser-ladders
+ * https://github.com/sebsowter/phaser-webpack
  */
 import Phaser from 'phaser';
 import MarioScene from './MarioScene';

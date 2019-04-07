@@ -20,7 +20,7 @@
       ],
       "height": 14,
       "name": "World",
-      "opacity": 2,
+      "opacity": 1,
       "properties": {
         "collides": "true"
       },
@@ -38,7 +38,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "image":"tiles.gif",
+      "image": "tiles.gif",
       "imageheight": 32,
       "imagewidth": 96,
       "margin": 0,
