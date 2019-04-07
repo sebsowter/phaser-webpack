@@ -22,7 +22,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     // Set body size
     this.body.setSize(16, 24);
     this.body.setOffset(0, 8);
-    //this.body.setCollideWorldBounds(true);
+    this.body.setCollideWorldBounds(true);
     
     // Set custom properties
     this.setData('facingRight', true);
