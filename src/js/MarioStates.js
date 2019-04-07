@@ -1,4 +1,4 @@
-export const MarioState = {
+export default {
   STANDING: 0,
   FALLING: 1,
   CROUCHING: 2,

@@ -37,8 +37,7 @@ export default class MarioScene extends Phaser.Scene {
     this.layer.setCollision(8);
 
     this.player1 = new MarioSprite(this, 2 * 16, 11 * 16, 'player', 0);
-    this.add.existing(this.player1);
-    this.physics.world.enable(this.player1);
+
     this.physics.add.collider(this.player1, this.layer);
 
     const camera = this.cameras.main;

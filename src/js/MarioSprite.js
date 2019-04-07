@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import MarioInputs from './MarioInputs';
-import { MarioState } from './MarioStates';
+import MarioState from './MarioStates';
 
 /**
  * MarioSprite
@@ -9,7 +9,13 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   constructor(...config) {
     super(...config);
     
-    this.setData('speed', 96);
+    this.scene.add.existing(this);
+    this.scene.physics.world.enable(this);
+
+    this.body.setSize(16, 24);
+    this.body.setOffset(0, 8);
+    this.setData('jumpVelocity', -192);
+    this.setData('speed', 128);
 
     this.inputs = new MarioInputs(this.scene);
     
@@ -71,9 +77,11 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       case MarioState.JUMPING:
         return this.body.onFloor() && this.inputs.isJump;
       case MarioState.CROUCHING:
-        return !this.body.onFloor() && this.inputs.isDown;
+        return this.body.onFloor() && this.inputs.isDown;
       case MarioState.FALLING:
         return !this.body.onFloor();
+      case MarioState.STANDING:
+        return this.body.onFloor();
       default:
         return;
     }
@@ -83,8 +91,8 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     switch (state) {
       case MarioState.JUMPING:
         this.setState(MarioState.JUMPING);
+        this.body.velocity.y = this.getData('jumpVelocity');
         this.play('jump');
-        this.body.velocity.y = -224;
         this.jumpTimer = this.scene.time.delayedCall(500, () => {
           this.switchState(MarioState.FALLING);
         });
@@ -104,6 +112,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       default:
         this.setState(MarioState.STANDING);
         this.play('stand');
+        if (this.jumpTimer) {
+          this.jumpTimer.destroy();
+        }
         break;
     }
   }
@@ -131,7 +142,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         }
         break;
       case MarioState.CROUCHING:
-      if (this.checkState(MarioState.JUMPING)) {
+        if (this.checkState(MarioState.JUMPING)) {
           this.switchState(MarioState.JUMPING);
         } else if (this.checkState(MarioState.FALLING)) {
           this.switchState(MarioState.FALLING);
@@ -141,7 +152,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         break;
       case MarioState.FALLING:
       case MarioState.JUMPING:
-        if (this.body.onFloor()) {
+        if (this.checkState(MarioState.STANDING)) {
           this.switchState(MarioState.STANDING);
         }
         break;
