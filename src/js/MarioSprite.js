@@ -105,7 +105,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       }
     }
 
-    // Define action checks
+    // Define checks
     this.check = {
       isWalking: () => this.body.onFloor() && (this.inputs.isLeft || this.inputs.isRight),
       isJumping: () => this.body.onFloor() && this.inputs.isJump,
