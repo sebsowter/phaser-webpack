@@ -11,7 +11,7 @@ const config = {
   type: Phaser.AUTO,
   width: 256,
   height: 224,
-  zoom: 2,
+  zoom: 1,
   pixelArt: true,
   input: {
     queue: true
