@@ -39,7 +39,7 @@ export default class MarioScene extends Phaser.Scene {
 
     // Create tilemap
     const tilemap = this.make.tilemap({
-        key: 'World1'
+      key: 'World1'
     });
 
     // Set world bounds
@@ -51,10 +51,12 @@ export default class MarioScene extends Phaser.Scene {
     // Create dynamic layer and set collisions
     const layer = tilemap.createDynamicLayer(0, tileset, 0, 0);
     layer.setCollision(2);
-    layer.setCollision(8);
+    layer.setCollision(6);
 
-    // Create Mario sprite and add collider for collisions with dynamic layer
+    // Create Mario sprite
     this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player');
+
+    // Add collider between Mario and tilemap layer
     this.physics.add.collider(this.mario, layer);
 
     // Set camera bounds and follow Mario

@@ -15,7 +15,7 @@ import MarioStates from './MarioStates';
  * @param {number} x
  * @param {number} y
  * @param {string} texture
- * @param {number} frame
+ * @property {number} frame
  */
 export default class MarioSprite extends Phaser.GameObjects.Sprite {
   constructor(...params) {
@@ -127,9 +127,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    this.updateState();
     this.updateDirection();
     this.updateVelocity();
+    this.updateState();
   }
 
   /**
