@@ -10,7 +10,6 @@ module.exports = {
     phaser: ['phaser']
   },
   output: {
-    publicPath: '/',
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
