@@ -6,6 +6,8 @@ This Webpack setup takes care of your code bundling and local server.
 
 Additionally, I have included some basic ES6 classes to demonstrate how to extend Phaser's base classes and implement player controls.
 
+![Mario](https://user-images.githubusercontent.com/7384630/55728490-1205fb00-5a0c-11e9-9fca-67641df3549b.jpg)
+
 ## Installation
 
 ```
