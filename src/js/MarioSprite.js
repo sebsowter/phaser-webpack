@@ -115,7 +115,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   }
 
   /**
-   * Update this Sprite's animations.
+   * Update this Sprite.
    *
    * @param {number} time - The current timestamp.
    * @param {number} delta - The delta time, in ms, elapsed since the last frame.
