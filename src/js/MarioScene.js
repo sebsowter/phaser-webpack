@@ -2,12 +2,21 @@ import Phaser from 'phaser';
 import MarioSprite from './MarioSprite';
 
 /**
- * MarioScene
+ * @classdesc
+ * Represents a Mario Scene.
  * 
- * class extends {Phaser.Scene}
+ * @class MarioScene
+ * @extends Phaser.Scene
+ * @memberof Phaser
+ * @constructor
+ * 
+ * @param {(string|Phaser.Scenes.Settings.Config)} config - Scene specific configuration settings.
  */
 export default class MarioScene extends Phaser.Scene {
 
+  /**
+   * Preload scene assets.
+   */
   preload() {
 
     // Load tilemap
@@ -22,7 +31,10 @@ export default class MarioScene extends Phaser.Scene {
       frameHeight: 32
     });
   }
-  
+
+  /**
+   * Create scene.
+   */
   create() {
 
     // Create tilemap
@@ -41,11 +53,11 @@ export default class MarioScene extends Phaser.Scene {
     layer.setCollision(2);
     layer.setCollision(8);
 
-    // Create Mario sprite and add collider to dynamic layer
+    // Create Mario sprite and add collider for collisions with dynamic layer
     this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player');
     this.physics.add.collider(this.mario, layer);
 
-    // Get main camera and set to follow Mario
+    // Set camera bounds and follow Mario
     const camera = this.cameras.main;
     camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
     camera.startFollow(this.mario);

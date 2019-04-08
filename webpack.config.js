@@ -36,6 +36,10 @@ module.exports = {
       })
     ]
   },
+  performance: {
+    maxEntrypointSize: 1000000,
+    maxAssetSize: 1000000
+  },
   module: {
     rules: [
       {
@@ -60,7 +64,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
       {
         from: 'src/assets/',

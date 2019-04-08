@@ -1,8 +1,9 @@
 /**
- * Phaser 3 Webpack Boilerplate
- *
  * @author Seb Sowter
- * https://github.com/sebsowter/phaser-webpack
+ * 
+ * Phaser 3 Webpack Platformer Boilerplate.
+ * 
+ * Includes an extended Phaser.GameObjects.Sprite class to demonstrate handling of character states.
  */
 import Phaser from 'phaser';
 import MarioScene from './MarioScene';

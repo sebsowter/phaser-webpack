@@ -3,25 +3,38 @@ import MarioInputs from './MarioInputs';
 import MarioStates from './MarioStates';
 
 /**
+ * @classdesc
+ * Represents a Mario Sprite.
+ * 
  * @class MarioSprite
- * @extends {Phaser.GameObjects.Sprite}
+ * @extends Phaser.GameObjects.GameObject
+ * @memberof Phaser.GameObjects
+ * @constructor
+ * 
+ * @param {Phaser.Scene} scene
+ * @param {number} x
+ * @param {number} y
+ * @param {string} texture
+ * @param {number} frame
  */
 export default class MarioSprite extends Phaser.GameObjects.Sprite {
-  constructor(...config) {
-    super(...config);
+  constructor(...params) {
+    super(...params);
 
     // Create inputs
     this.inputs = new MarioInputs(this.scene);
     
-    // Add Sprite to Scene
+    // Add sprite to scene
     this.scene.add.existing(this);
     
     // Enable physics
     this.scene.physics.world.enable(this);
 
-    // Set body size
+    // Set physics body size
     this.body.setSize(16, 24);
     this.body.setOffset(0, 8);
+
+    // Set collide world bounds to true
     this.body.setCollideWorldBounds(true);
     
     // Set custom properties
@@ -29,7 +42,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     this.setData('jumpVelocity', -256);
     this.setData('walkVelocity', 128);
     
-    // Creat Animations
+    // Create animations
     this.scene.anims.create({
       key: 'stand',
       frameRate: 0,
@@ -71,7 +84,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         this.play('jump');
         this.body.velocity.y = this.getData('jumpVelocity');
         this.jumpTimer = this.scene.time.delayedCall(500, () => {
-          this.switchState(MarioStates.FALLING);
+          this.actions.fall();
         });
       },
       walk: () => {
@@ -106,12 +119,10 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   }
 
   /**
-   * preUpdate
-   * 
-   * @method preUpdate
-   * @param {number} time
-   * @param {number} delta
-   * @return {Void}
+   * Update this Sprite's animations.
+   *
+   * @param {number} time - The current timestamp.
+   * @param {number} delta - The delta time, in ms, elapsed since the last frame.
    */
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
@@ -122,10 +133,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   }
 
   /**
-   * Check and update state
-   * 
-   * @method updateState
-   * @return {Void} 
+   * Update this Sprite's state.
    */
   updateState() {
     switch (this.state) {
@@ -150,7 +158,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         }
         break;
       case MarioStates.CROUCHING:
-        if (this.check.isCrouching()) {
+        if (!this.check.isCrouching()) {
           this.actions.stand();
         }
         break;
@@ -166,23 +174,14 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
   }
 
   /**
-   * Update direction
-   * 
-   * @method updateDirection
-   * @return {Void} 
+   * Update this Sprite's direction.
    */
   updateDirection() {
-    const flipX = this.inputs.isLeft ? true : this.inputs.isRight ? false : this.getData('flipX');
-    
-    this.setData('flipX', flipX);
-    this.setFlipX(this.getData('flipX'));
+    this.setFlipX(this.inputs.isLeft ? true : this.inputs.isRight ? false : this.flipX);
   }
 
   /**
-   * Update velocity
-   * 
-   * @method updateVelocity
-   * @return {Void} 
+   * Update this Sprite's velocity.
    */
   updateVelocity() {
     switch (this.state) {

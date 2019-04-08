@@ -1,7 +1,7 @@
 /**
- * MarioStates
+ * Represents Mario's states.
  * 
- * @type {Object} 
+ * @type {object}
  */
 export default {
   STANDING: 0,

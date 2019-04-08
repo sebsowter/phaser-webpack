@@ -1,7 +1,11 @@
 /**
- * MarioInputs
+ * @classdesc
+ * Represents keyboard inputs for Mario.
  * 
- * export default {Class}
+ * @class MarioInputs
+ * @constructor
+ * 
+ * @param {Phaser.Scene} scene
  */
 export default class MarioInputs {
   constructor(scene) {
