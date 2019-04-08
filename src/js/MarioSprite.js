@@ -110,8 +110,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       isWalking: () => this.body.onFloor() && (this.inputs.isLeft || this.inputs.isRight),
       isJumping: () => this.body.onFloor() && this.inputs.isJump,
       isCrouching: () => this.body.onFloor() && this.inputs.isDown,
-      isFalling: () => !this.body.onFloor(),
-      isStanding: () => this.body.onFloor()
+      isOnFloor: () => this.body.onFloor()
     }
   }
 
@@ -143,7 +142,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
           this.actions.walk();
         } else if (this.check.isCrouching()) {
           this.actions.crouch();
-        } else if (this.check.isFalling()) {
+        } else if (!this.check.isOnFloor()) {
           this.actions.fall();
         }
         break;
@@ -155,7 +154,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
         if (this.check.isJumping()) {
           this.actions.jump();
-        } else if (this.check.isFalling()) {
+        } else if (!this.check.isOnFloor()) {
           this.actions.fall();
         } else if (!this.check.isWalking()) {
           this.actions.stand();
@@ -176,7 +175,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
       case MarioStates.JUMPING:
         this.body.setVelocityX(velocityX);
 
-        if (this.check.isStanding()) {
+        if (this.check.isOnFloor()) {
           this.actions.stand();
         }
         break;
