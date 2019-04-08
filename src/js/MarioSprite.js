@@ -149,8 +149,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
       // If walking
       case MarioStates.WALKING:
-        this.body.setVelocityY(0);
-        this.body.setVelocityX(velocityX);
+        this.body.setVelocity(velocityX, 0);
 
         if (this.check.isJumping()) {
           this.actions.jump();
