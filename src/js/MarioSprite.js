@@ -24,7 +24,7 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     // Create inputs
     this.inputs = new MarioInputs(this.scene);
     
-    // Add sprite to scene
+    // Add Sprite to Scene
     this.scene.add.existing(this);
     
     // Enable physics
@@ -126,18 +126,17 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
    */
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
+    
+    // Get this Sprite's x velocity
+    const velocityX = (this.inputs.isRight ? 1 : this.inputs.isLeft ? -1 : 0) * this.getData('walkVelocity');
+    
+    // Face this Sprite in the correct direction
+    this.setFlipX(this.inputs.isLeft ? true : this.inputs.isRight ? false : this.flipX);
 
-    this.updateDirection();
-    this.updateVelocity();
-    this.updateState();
-  }
-
-  /**
-   * Update this Sprite's state.
-   */
-  updateState() {
+    // Update this Sprite's state
     switch (this.state) {
       case MarioStates.STANDING:
+        this.body.setVelocity(0, 0);
         if (this.check.isJumping()) {
           this.actions.jump();
         } else if (this.check.isWalking()) {
@@ -149,7 +148,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         }
         break;
       case MarioStates.WALKING:
-      if (this.check.isJumping()) {
+        this.body.setVelocityY(0);
+        this.body.setVelocityX(velocityX);
+        if (this.check.isJumping()) {
           this.actions.jump();
         } else if (this.check.isFalling()) {
           this.actions.fall();
@@ -158,42 +159,18 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         }
         break;
       case MarioStates.CROUCHING:
+        this.body.setVelocity(0, 0);
         if (!this.check.isCrouching()) {
           this.actions.stand();
         }
         break;
+
       case MarioStates.FALLING:
       case MarioStates.JUMPING:
+        this.body.setVelocityX(velocityX);
         if (this.check.isStanding()) {
           this.actions.stand();
         }
-        break;
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Update this Sprite's direction.
-   */
-  updateDirection() {
-    this.setFlipX(this.inputs.isLeft ? true : this.inputs.isRight ? false : this.flipX);
-  }
-
-  /**
-   * Update this Sprite's velocity.
-   */
-  updateVelocity() {
-    switch (this.state) {
-      case MarioStates.WALKING:
-        this.body.setVelocityY(0);
-      case MarioStates.FALLING:
-      case MarioStates.JUMPING:
-        this.body.setVelocityX((this.inputs.isRight ? 1 : this.inputs.isLeft ? -1 : 0) * this.getData('walkVelocity'));
-        break;
-      case MarioStates.STANDING:
-      case MarioStates.CROUCHING:
-        this.body.setVelocity(0, 0);
         break;
       default:
         break;
