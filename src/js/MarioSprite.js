@@ -36,7 +36,6 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     this.body.setCollideWorldBounds(true);
     
     // Set custom properties
-    this.setData('flipX', false);
     this.setData('jumpVelocity', -256);
     this.setData('walkVelocity', 128);
     
