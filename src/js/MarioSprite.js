@@ -8,18 +8,16 @@ import MarioStates from './MarioStates';
  * 
  * @class MarioSprite
  * @extends Phaser.GameObjects.GameObject
- * @memberof Phaser.GameObjects
- * @constructor
  * 
  * @param {Phaser.Scene} scene
  * @param {number} x
  * @param {number} y
  * @param {string} texture
- * @property {number} frame
+ * @param {number} frame
  */
 export default class MarioSprite extends Phaser.GameObjects.Sprite {
-  constructor(...params) {
-    super(...params);
+  constructor(scene, x, y, texture, frame) {
+    super(scene, x, y, texture, frame);
 
     // Create inputs
     this.inputs = new MarioInputs(this.scene);
@@ -135,8 +133,11 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     // Update this Sprite's state
     switch (this.state) {
+
+      // If standing
       case MarioStates.STANDING:
         this.body.setVelocity(0, 0);
+        
         if (this.check.isJumping()) {
           this.actions.jump();
         } else if (this.check.isWalking()) {
@@ -147,9 +148,12 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
           this.actions.fall();
         }
         break;
+
+      // If walking
       case MarioStates.WALKING:
         this.body.setVelocityY(0);
         this.body.setVelocityX(velocityX);
+
         if (this.check.isJumping()) {
           this.actions.jump();
         } else if (this.check.isFalling()) {
@@ -158,21 +162,24 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
           this.actions.stand();
         }
         break;
+
+      // If crouching
       case MarioStates.CROUCHING:
         this.body.setVelocity(0, 0);
+
         if (!this.check.isCrouching()) {
           this.actions.stand();
         }
         break;
 
+      // If falling or jumping
       case MarioStates.FALLING:
       case MarioStates.JUMPING:
         this.body.setVelocityX(velocityX);
+
         if (this.check.isStanding()) {
           this.actions.stand();
         }
-        break;
-      default:
         break;
     }
   }

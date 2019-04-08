@@ -5,7 +5,7 @@ const config = {
   type: Phaser.AUTO,
   width: 256,
   height: 224,
-  zoom: 1,
+  zoom: 2,
   pixelArt: true,
   input: {
     queue: true

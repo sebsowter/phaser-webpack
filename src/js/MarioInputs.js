@@ -3,7 +3,6 @@
  * Represents keyboard inputs for Mario.
  * 
  * @class MarioInputs
- * @constructor
  * 
  * @param {Phaser.Scene} scene
  */

@@ -7,8 +7,6 @@ import MarioSprite from './MarioSprite';
  * 
  * @class MarioScene
  * @extends Phaser.Scene
- * @memberof Phaser
- * @constructor
  * 
  * @param {(string|Phaser.Scenes.Settings.Config)} config - Scene specific configuration settings.
  */
@@ -53,15 +51,17 @@ export default class MarioScene extends Phaser.Scene {
     layer.setCollision(2);
     layer.setCollision(6);
 
-    // Create Mario sprite
-    this.mario = new MarioSprite(this, 2 * 16, 11 * 16, 'player');
+    // Create Mario
+    this.mario = new MarioSprite(this, 32, 192, 'player');
 
     // Add collider between Mario and tilemap layer
     this.physics.add.collider(this.mario, layer);
 
-    // Set camera bounds and follow Mario
+    // Set camera bounds
     const camera = this.cameras.main;
     camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
+
+    // Tell camera to follow Mario
     camera.startFollow(this.mario);
   }
 }
