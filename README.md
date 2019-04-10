@@ -14,7 +14,7 @@ View the [demo](https://sebsowter.github.io/phaser-webpack/).
 
 Ensure you have [Node.js](https://nodejs.org) installed.
 
-Clone this repo and cd to project directory.
+Clone this repo and `cd` to project directory.
 
 ```
 npm i
