@@ -21,10 +21,10 @@ export default class MarioScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('World1', './assets/tilemaps/tilemap.json');
 
     // Load tiles image
-    this.load.image('tiles', './assets/images/tiles.gif');
+    this.load.image('tiles', './assets/images/tiles.png');
 
     // Load player spritesheet
-    this.load.spritesheet('player', './assets/images/player.gif', {
+    this.load.spritesheet('player', './assets/images/player.png', {
       frameWidth: 16,
       frameHeight: 32
     });

@@ -80,8 +80,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
         this.setState(MarioStates.JUMPING);
         this.play('jump');
         this.body.velocity.y = this.getData('jumpVelocity');
-        this.jumpTimer = this.scene.time.delayedCall(500, () => {
-          this.actions.fall();
+        this.jumpTimer = this.scene.time.addEvent({
+          delay: 500,
+          callback: this.actions.fall
         });
       },
       walk: () => {
