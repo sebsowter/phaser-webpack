@@ -108,9 +108,9 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
 
     // Define checks
     this.check = {
-      isWalking: () => this.body.onFloor() && (this.inputs.isLeft || this.inputs.isRight),
-      isJumping: () => this.body.onFloor() && this.inputs.isJump,
-      isCrouching: () => this.body.onFloor() && this.inputs.isDown,
+      isWalking: () => this.body.onFloor() && (this.inputs.left || this.inputs.right),
+      isJumping: () => this.body.onFloor() && this.inputs.jump,
+      isCrouching: () => this.body.onFloor() && this.inputs.down,
       isOnFloor: () => this.body.onFloor()
     }
   }
@@ -125,10 +125,10 @@ export default class MarioSprite extends Phaser.GameObjects.Sprite {
     super.preUpdate(time, delta);
     
     // Get this Sprite's x velocity
-    const velocityX = (this.inputs.isRight ? 1 : this.inputs.isLeft ? -1 : 0) * this.getData('walkVelocity');
+    const velocityX = (this.inputs.right ? 1 : this.inputs.left ? -1 : 0) * this.getData('walkVelocity');
     
     // Face this Sprite in the correct direction
-    this.setFlipX(this.inputs.isLeft ? true : this.inputs.isRight ? false : this.flipX);
+    this.setFlipX(this.inputs.left ? true : this.inputs.right ? false : this.flipX);
 
     // Update this Sprite's state
     switch (this.state) {
