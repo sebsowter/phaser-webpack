@@ -62,6 +62,6 @@ export default class MarioScene extends Phaser.Scene {
     camera.setBounds(0, 0, tilemap.widthInPixels, tilemap.heightInPixels);
 
     // Tell camera to follow Mario
-    camera.startFollow(this.mario);
+    camera.startFollow(this.mario, true);
   }
 }
