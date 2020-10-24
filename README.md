@@ -1,6 +1,6 @@
 # Phaser 3 Webpack Boilerplate
 
-Get up and running with Phaser 3 using JavaScript ES6.
+Get up and running with Phaser 3 using TypeScript or JavaScript ES6.
 
 This Webpack setup takes care of your code bundling and local development server.
 
@@ -23,11 +23,13 @@ npm i
 ## Tasks
 
 Run the development server to preview locally.
+
 ```
 npm start
 ```
 
 Create a production build.
+
 ```
 npm run build
 ```

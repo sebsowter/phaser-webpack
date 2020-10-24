@@ -9,42 +9,6 @@ export default class MarioInputs {
     );
   }
 
-  public get pad(): Phaser.Input.Gamepad.Gamepad {
-    const pad = this.scene.input.gamepad;
-
-    if (pad && pad.gamepads && pad.gamepads.length) {
-      return pad.gamepads[0];
-    }
-
-    return null;
-  }
-
-  public getPadH(isLeft: boolean): boolean {
-    return this.pad && this.pad.axes[0].getValue() === (isLeft ? -1 : 1);
-  }
-
-  public getPadV(isUp: boolean): boolean {
-    return this.pad && this.pad.axes[1].getValue() === (isUp ? -1 : 1);
-  }
-
-  public get padA(): boolean {
-    return (
-      this.pad &&
-      this.pad.buttons.some(
-        (button) => button.index % 2 === 0 && button.value === 1
-      )
-    );
-  }
-
-  public get padB(): boolean {
-    return (
-      this.pad &&
-      this.pad.buttons.some(
-        (button) => button.index % 2 === 1 && button.value === 1
-      )
-    );
-  }
-
   public get up(): boolean {
     return this.keys.up.isDown || this.keys.W.isDown || this.getPadV(true);
   }
@@ -65,8 +29,48 @@ export default class MarioInputs {
     return (
       this.keys.up.isDown ||
       this.keys.W.isDown ||
+      this.keys.Z.isDown ||
       this.keys.X.isDown ||
-      this.keys.space.isDown
+      this.keys.C.isDown ||
+      this.keys.space.isDown ||
+      this.padA ||
+      this.padB
     );
+  }
+
+  public get pad(): Phaser.Input.Gamepad.Gamepad {
+    const pad = this.scene.input.gamepad;
+
+    if (pad && pad.gamepads && pad.gamepads.length) {
+      return pad.gamepads[0];
+    }
+
+    return null;
+  }
+
+  public get padA(): boolean {
+    return (
+      this.pad &&
+      this.pad.buttons.some(
+        (button) => button.index % 2 === 0 && button.value === 1
+      )
+    );
+  }
+
+  public get padB(): boolean {
+    return (
+      this.pad &&
+      this.pad.buttons.some(
+        (button) => button.index % 2 === 1 && button.value === 1
+      )
+    );
+  }
+
+  public getPadH(isLeft: boolean): boolean {
+    return this.pad && this.pad.axes[0].getValue() === (isLeft ? -1 : 1);
+  }
+
+  public getPadV(isUp: boolean): boolean {
+    return this.pad && this.pad.axes[1].getValue() === (isUp ? -1 : 1);
   }
 }
