@@ -30,4 +30,6 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [LoaderScene, MarioScene],
 };
 
-const game = new Phaser.Game(config);
+window.addEventListener("load", function () {
+  new Phaser.Game(config);
+});
