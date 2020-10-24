@@ -18,13 +18,13 @@ export default class MarioSprite extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
 
+    this.setData({ jumpVelocity: -260, walkVelocity: 128 });
+
     this.body.setSize(16, 24);
     this.body.setOffset(0, 8);
     this.body.setCollideWorldBounds(true);
 
     this.inputs = new MarioInputs(this.scene);
-
-    this.setData({ jumpVelocity: -260, walkVelocity: 128 });
 
     this.scene.anims.create({
       key: "stand",
@@ -63,8 +63,6 @@ export default class MarioSprite extends Phaser.Physics.Arcade.Sprite {
   }
 
   public setState(value: number): this {
-    console.log("value", value);
-
     switch (value) {
       case MarioStates.JUMPING:
         this.play("jump");
