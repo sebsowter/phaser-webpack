@@ -10,25 +10,24 @@ export default class MarioInputs {
   }
 
   public get up(): boolean {
-    return this.keys.up.isDown || this.keys.W.isDown || this.getPadV(true);
+    return this.keys.up.isDown || this.keys.W.isDown || this.padAxisV === -1;
   }
 
   public get down(): boolean {
-    return this.keys.down.isDown || this.keys.S.isDown || this.getPadV(false);
+    return this.keys.down.isDown || this.keys.S.isDown || this.padAxisV === 1;
   }
 
   public get left(): boolean {
-    return this.keys.left.isDown || this.keys.A.isDown || this.getPadH(true);
+    return this.keys.left.isDown || this.keys.A.isDown || this.padAxisH === -1;
   }
 
   public get right(): boolean {
-    return this.keys.right.isDown || this.keys.D.isDown || this.getPadH(false);
+    return this.keys.right.isDown || this.keys.D.isDown || this.padAxisH === 1;
   }
 
   public get jump(): boolean {
     return (
-      this.keys.up.isDown ||
-      this.keys.W.isDown ||
+      this.up ||
       this.keys.Z.isDown ||
       this.keys.X.isDown ||
       this.keys.C.isDown ||
@@ -38,7 +37,45 @@ export default class MarioInputs {
     );
   }
 
-  public get pad(): Phaser.Input.Gamepad.Gamepad {
+  private get padA(): boolean {
+    return this.padButtons.some(
+      (button: Phaser.Input.Gamepad.Button) =>
+        button.index % 2 === 0 && button.value === 1
+    );
+  }
+
+  private get padB(): boolean {
+    return this.padButtons.some(
+      (button: Phaser.Input.Gamepad.Button) =>
+        button.index % 2 === 1 && button.value === 1
+    );
+  }
+
+  private get padAxisH(): number {
+    if (this.pad) {
+      return this.pad.axes[0].getValue();
+    }
+
+    return 0;
+  }
+
+  private get padAxisV(): number {
+    if (this.pad) {
+      return this.pad.axes[1].getValue();
+    }
+
+    return 0;
+  }
+
+  private get padButtons(): Phaser.Input.Gamepad.Button[] {
+    if (this.pad) {
+      return this.pad.buttons;
+    }
+
+    return [];
+  }
+
+  private get pad(): Phaser.Input.Gamepad.Gamepad {
     const pad = this.scene.input.gamepad;
 
     if (pad && pad.gamepads && pad.gamepads.length) {
@@ -46,31 +83,5 @@ export default class MarioInputs {
     }
 
     return null;
-  }
-
-  public get padA(): boolean {
-    return (
-      this.pad &&
-      this.pad.buttons.some(
-        (button) => button.index % 2 === 0 && button.value === 1
-      )
-    );
-  }
-
-  public get padB(): boolean {
-    return (
-      this.pad &&
-      this.pad.buttons.some(
-        (button) => button.index % 2 === 1 && button.value === 1
-      )
-    );
-  }
-
-  public getPadH(isLeft: boolean): boolean {
-    return this.pad && this.pad.axes[0].getValue() === (isLeft ? -1 : 1);
-  }
-
-  public getPadV(isUp: boolean): boolean {
-    return this.pad && this.pad.axes[1].getValue() === (isUp ? -1 : 1);
   }
 }
