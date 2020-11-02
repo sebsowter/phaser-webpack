@@ -84,9 +84,10 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
   public preUpdate(time: number, delta: number): void {
     const { left, right, down, jump } = this.inputs;
-    const flipX = left ? true : right ? false : this.flipX;
-    const velocityX =
-      (right ? 1 : left ? -1 : 0) * this.getData("walkVelocity");
+    const flipX =
+      left && right ? this.flipX : left ? true : right ? false : this.flipX;
+    const directionX = Number(left) * -1 + Number(right);
+    const velocityX = directionX * this.getData("walkVelocity");
 
     switch (this.state) {
       case States.STANDING:

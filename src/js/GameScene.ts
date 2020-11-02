@@ -18,7 +18,7 @@ export default class GameScene extends Phaser.Scene {
     const mario = new MarioSprite(this, 32, 192);
     const { widthInPixels, heightInPixels } = tilemap;
 
-    layer.forEachTile((tile) => {
+    layer.forEachTile(function (tile: Phaser.Tilemaps.Tile) {
       switch (tile.index) {
         case 2:
         case 6:
@@ -29,7 +29,7 @@ export default class GameScene extends Phaser.Scene {
           tile.setCollision(false, false, true, false, false);
           break;
       }
-    });
+    }, this);
 
     this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
     this.physics.world.TILE_BIAS = 8;
