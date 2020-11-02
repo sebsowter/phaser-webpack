@@ -21,16 +21,18 @@ export default class GameScene extends Phaser.Scene {
     layer.forEachTile((tile) => {
       switch (tile.index) {
         case 2:
-          tile.setCollision(false, false, true, false, false);
-          break;
         case 6:
           tile.setCollision(true);
+          break;
+        case 9:
+        case 10:
+          tile.setCollision(false, false, true, false, false);
           break;
       }
     });
 
     this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
-    this.physics.world.TILE_BIAS = 12;
+    this.physics.world.TILE_BIAS = 8;
     this.physics.add.collider(mario, layer);
 
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels);

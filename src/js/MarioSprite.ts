@@ -26,36 +26,28 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.anims.create({
       key: "stand",
-      frameRate: 0,
       frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 0,
+        frames: [0],
       }),
-      repeat: 0,
     });
-
     this.scene.anims.create({
       key: "walk",
       frameRate: 12,
       frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 0,
-        end: 2,
+        frames: [1, 2, 0],
       }),
       repeat: -1,
     });
-
     this.scene.anims.create({
       key: "jump",
-      frameRate: 0,
       frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 2,
+        frames: [2],
       }),
     });
-
     this.scene.anims.create({
       key: "crouch",
-      frameRate: 0,
       frames: this.scene.anims.generateFrameNumbers("player", {
-        start: 3,
+        frames: [3],
       }),
     });
   }
@@ -98,14 +90,14 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
     switch (this.state) {
       case States.STANDING:
-        if (this.body.onFloor() && jump) {
-          this.setState(States.JUMPING);
-        } else if (this.body.onFloor() && (left || right)) {
-          this.setState(States.WALKING);
-        } else if (this.body.onFloor() && down) {
-          this.setState(States.CROUCHING);
-        } else if (!this.body.onFloor()) {
+        if (!this.body.onFloor()) {
           this.setState(States.FALLING);
+        } else if (jump) {
+          this.setState(States.JUMPING);
+        } else if (left || right) {
+          this.setState(States.WALKING);
+        } else if (down) {
+          this.setState(States.CROUCHING);
         }
         break;
 
@@ -113,17 +105,17 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
         this.setFlipX(flipX);
         this.body.setVelocity(velocityX, 0);
 
-        if (this.body.onFloor() && jump) {
-          this.setState(States.JUMPING);
-        } else if (!this.body.onFloor()) {
+        if (!this.body.onFloor()) {
           this.setState(States.FALLING);
-        } else if (!(this.body.onFloor() && (left || right))) {
+        } else if (jump) {
+          this.setState(States.JUMPING);
+        } else if (!left && !right) {
           this.setState(States.STANDING);
         }
         break;
 
       case States.CROUCHING:
-        if (!(this.body.onFloor() && down)) {
+        if (!down) {
           this.setState(States.STANDING);
         }
         break;
