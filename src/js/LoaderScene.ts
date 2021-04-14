@@ -1,5 +1,5 @@
 export default class LoaderScene extends Phaser.Scene {
-  public preload(): void {
+  public preload() {
     this.load.tilemapTiledJSON("tilemap", "./assets/tilemaps/tilemap.json");
     this.load.image("tiles", "./assets/images/tiles.png");
     this.load.spritesheet("player", "./assets/images/player.png", {
@@ -8,7 +8,7 @@ export default class LoaderScene extends Phaser.Scene {
     });
   }
 
-  public create(): void {
+  public create() {
     this.scene.start("game");
   }
 }

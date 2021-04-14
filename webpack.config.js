@@ -1,48 +1,18 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
-  entry: {
-    index: "./src/js/index.ts",
-    phaser: ["phaser"],
-  },
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].[chunkhash].js",
-    chunkFilename: "[name].[chunkhash].js",
-  },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "phaser",
-          enforce: true,
-          chunks: "initial",
-        },
-      },
-    },
-  },
-  performance: {
-    maxEntrypointSize: 1000000,
-    maxAssetSize: 1000000,
-  },
-  resolve: {
-    extensions: [".ts", ".js"],
-  },
+  entry: path.resolve(__dirname, "./src/js/index.ts"),
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-        },
+        use: ["babel-loader"],
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
@@ -60,16 +30,41 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-    new CopyWebpackPlugin([
-      {
-        from: "src/assets/",
-        to: "assets/",
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "phaser",
+          enforce: true,
+          chunks: "initial",
+        },
       },
-    ]),
+    },
+  },
+  resolve: {
+    extensions: [".js", ".ts"],
+  },
+  output: {
+    path: path.resolve(__dirname, "./dist"),
+    filename: "[name].[chunkhash].js",
+    chunkFilename: "[name].[chunkhash].js",
+    clean: true,
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, "./dist"),
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: "src/assets/",
+          to: "assets/",
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
-      template: "src/index.html",
+      template: path.resolve(__dirname, "./src/index.html"),
       filename: "index.html",
       title: "Phaser Webpack",
       inject: "body",

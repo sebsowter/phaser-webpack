@@ -22,7 +22,7 @@ npm i
 
 ## Tasks
 
-Run the development server to preview locally.
+Run the development server to preview locally at http://localhost:8080/.
 
 ```
 npm start

@@ -9,12 +9,12 @@ export default class GameScene extends Phaser.Scene {
     });
   }
 
-  public create(): void {
+  public create() {
     const tilemap = this.make.tilemap({
       key: "tilemap",
     });
     const tileset = tilemap.addTilesetImage("tiles");
-    const layer = tilemap.createDynamicLayer(0, tileset, 0, 0);
+    const layer = tilemap.createLayer(0, tileset, 0, 0);
     const mario = new MarioSprite(this, 32, 192);
     const { widthInPixels, heightInPixels } = tilemap;
 
