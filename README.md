@@ -1,4 +1,4 @@
-# Phaser 3 Webpack Boilerplate
+# Phaser 3 Webpack 5 Boilerplate
 
 Get up and running with Phaser 3 using TypeScript or JavaScript ES6.
 
