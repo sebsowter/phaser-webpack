@@ -1,6 +1,9 @@
-import MarioSprite from "./MarioSprite";
+import Inputs from "./Inputs";
+import Mario from "./Mario";
 
 export default class GameScene extends Phaser.Scene {
+  private _inputs: Inputs;
+
   constructor() {
     super({
       key: "game",
@@ -15,7 +18,10 @@ export default class GameScene extends Phaser.Scene {
     });
     const tileset = tilemap.addTilesetImage("tiles");
     const layer = tilemap.createLayer(0, tileset, 0, 0);
-    const mario = new MarioSprite(this, 32, 192);
+
+    this._inputs = new Inputs(this);
+
+    const mario = new Mario(this, 32, 192);
     const { widthInPixels, heightInPixels } = tilemap;
 
     layer.forEachTile(function (tile: Phaser.Tilemaps.Tile) {
@@ -24,6 +30,7 @@ export default class GameScene extends Phaser.Scene {
         case 6:
           tile.setCollision(true);
           break;
+
         case 9:
         case 10:
           tile.setCollision(false, false, true, false, false);
@@ -31,11 +38,15 @@ export default class GameScene extends Phaser.Scene {
       }
     }, this);
 
-    this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
+    this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64);
     this.physics.world.TILE_BIAS = 8;
     this.physics.add.collider(mario, layer);
 
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels);
     this.cameras.main.startFollow(mario, true);
+  }
+
+  public get inputs() {
+    return this._inputs;
   }
 }

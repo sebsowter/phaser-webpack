@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const package = require("./package.json");
 
 module.exports = {
   entry: path.resolve(__dirname, "./src/js/index.ts"),
@@ -66,8 +67,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "./src/index.html"),
       filename: "index.html",
-      title: "Phaser Webpack",
+      title: package.description,
       inject: "body",
+      hot: true,
     }),
   ],
 };

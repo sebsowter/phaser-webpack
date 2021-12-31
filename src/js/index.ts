@@ -10,8 +10,6 @@ const config: Phaser.Types.Core.GameConfig = {
   input: {
     keyboard: true,
     gamepad: true,
-    mouse: false,
-    touch: false,
   },
   render: {
     pixelArt: true,
@@ -30,6 +28,4 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [LoaderScene, GameScene],
 };
 
-window.addEventListener("load", function () {
-  const game = new Phaser.Game(config);
-});
+export const game = new Phaser.Game(config);
