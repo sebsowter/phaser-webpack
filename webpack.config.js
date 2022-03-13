@@ -53,7 +53,7 @@ module.exports = {
     clean: true,
   },
   devServer: {
-    contentBase: path.resolve(__dirname, "./dist"),
+    static: path.resolve(__dirname, "./dist"),
   },
   plugins: [
     new CopyWebpackPlugin({
