@@ -83,7 +83,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     return super.setState(value);
   }
 
-  public preUpdate(time: number, delta: number): void {
+  public preUpdate(time: number, delta: number) {
     const { left, right, down, jump } = this.scene.inputs;
     const flipX =
       left && right ? this.flipX : left ? true : right ? false : this.flipX;
@@ -134,7 +134,11 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
         this.body.setVelocityX(velocityX);
 
         if (this.body.onFloor()) {
-          this.setState(States.STANDING);
+          if (left || right) {
+            this.setState(States.WALKING);
+          } else {
+            this.setState(States.STANDING);
+          }
         }
         break;
     }
