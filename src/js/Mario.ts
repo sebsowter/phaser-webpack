@@ -8,7 +8,7 @@ enum States {
   WALKING,
 }
 
-export default class Mario extends Phaser.Physics.Arcade.Sprite {
+export default class Mario extends Phaser.GameObjects.Sprite {
   public scene: GameScene;
   public body: Phaser.Physics.Arcade.Body;
 
@@ -51,11 +51,12 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
   }
 
   public setState(value: States) {
-    const jumpVelocity = this.getData("jumpVelocity");
-
     switch (value) {
       case States.JUMPING:
-        this.body.setSize(16, 24).setOffset(0, 8).setVelocityY(jumpVelocity);
+        this.body
+          .setSize(16, 24)
+          .setOffset(0, 8)
+          .setVelocityY(this.jumpVelocity);
         this.play("jump");
         break;
 
@@ -88,7 +89,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     const flipX =
       left && right ? this.flipX : left ? true : right ? false : this.flipX;
     const directionX = Number(left) * -1 + Number(right);
-    const velocityX = directionX * this.getData("walkVelocity");
+    const velocityX = directionX * this.walkVelocity;
 
     switch (this.state) {
       case States.STANDING:
@@ -126,7 +127,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
         if (this.body.velocity.y > 0) {
           this.setState(States.FALLING);
         } else if (!jump) {
-          this.setVelocityY(this.body.velocity.y * 0.9);
+          this.body.setVelocityY(this.body.velocity.y * 0.9);
         }
 
       case States.FALLING:
@@ -144,5 +145,13 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     }
 
     super.preUpdate(time, delta);
+  }
+
+  public get walkVelocity(): number {
+    return this.getData("walkVelocity");
+  }
+
+  public get jumpVelocity(): number {
+    return this.getData("jumpVelocity");
   }
 }
