@@ -45,15 +45,12 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
 
-    this.body
-      .setSize(16, 24)
-      .setOffset(0, 8)
-      .setCollideWorldBounds(true)
-      .setAllowDrag(true)
-      .setMaxVelocityX(160)
-      .setDragX(Math.pow(16, 2));
+    this.body.setAllowDrag(true).setMaxVelocityX(160);
 
-    this.setState(States.STANDING);
+    this.setSize(16, 24)
+      .setCollideWorldBounds(true)
+      .setDragX(Math.pow(16, 2))
+      .setState(States.STANDING);
   }
 
   public setState(value: States) {
