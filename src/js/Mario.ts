@@ -78,6 +78,7 @@ export default class Mario extends Phaser.GameObjects.Sprite {
 
       case States.JUMPING:
         this.body.setSize(16, 24).setOffset(0, 8).setVelocityY(-260);
+        this.scene.sound.play("jump", { volume: 0.5 });
         this.play("jump");
         break;
 
