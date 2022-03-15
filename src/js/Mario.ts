@@ -8,7 +8,7 @@ enum States {
   WALKING,
 }
 
-export default class Mario extends Phaser.GameObjects.Sprite {
+export default class Mario extends Phaser.Physics.Arcade.Sprite {
   public scene: GameScene;
   public body: Phaser.Physics.Arcade.Body;
 
@@ -59,32 +59,26 @@ export default class Mario extends Phaser.GameObjects.Sprite {
   public setState(value: States) {
     switch (value) {
       case States.STANDING:
-        this.body
-          .setSize(16, 24)
-          .setOffset(0, 8)
-          .setVelocityX(this.body.velocity.x * 0.5);
-        this.play("stand");
+        this.setSize(16, 24)
+          .setVelocityX(this.body.velocity.x * 0.5)
+          .play("stand");
         break;
 
       case States.WALKING:
-        this.body.setSize(16, 24).setOffset(0, 8);
-        this.play("walk");
+        this.setSize(16, 24).play("walk");
         break;
 
       case States.CROUCHING:
-        this.body.setSize(16, 16).setOffset(0, 16);
-        this.play("crouch");
+        this.setSize(16, 16).play("crouch");
         break;
 
       case States.JUMPING:
-        this.body.setSize(16, 24).setOffset(0, 8).setVelocityY(-260);
+        this.setSize(16, 24).setVelocityY(-260).play("jump");
         this.scene.sound.play("jump", { volume: 0.5 });
-        this.play("jump");
         break;
 
       case States.FALLING:
-        this.body.setSize(16, 24).setOffset(0, 8);
-        this.play("jump");
+        this.setSize(16, 24).play("jump");
         break;
     }
 
@@ -112,8 +106,7 @@ export default class Mario extends Phaser.GameObjects.Sprite {
         break;
 
       case States.WALKING:
-        this.setFlipX(flipX);
-        this.body.setAccelerationX(accelerationX);
+        this.setFlipX(flipX).setAccelerationX(accelerationX);
 
         if (!this.body.onFloor()) {
           this.setState(States.FALLING);
@@ -134,12 +127,11 @@ export default class Mario extends Phaser.GameObjects.Sprite {
         if (this.body.velocity.y > 0) {
           this.setState(States.FALLING);
         } else if (!jump) {
-          this.body.setVelocityY(this.body.velocity.y * 0.9);
+          this.setVelocityY(this.body.velocity.y * 0.9);
         }
 
       case States.FALLING:
-        this.setFlipX(flipX);
-        this.body.setAccelerationX(accelerationX);
+        this.setFlipX(flipX).setAccelerationX(accelerationX);
 
         if (this.body.onFloor()) {
           if (left || right) {
@@ -152,5 +144,13 @@ export default class Mario extends Phaser.GameObjects.Sprite {
     }
 
     super.preUpdate(time, delta);
+  }
+
+  public setSize(width: number, height: number) {
+    super.setSize(width, height);
+
+    this.body.setOffset(0, this.height - height);
+
+    return this;
   }
 }
