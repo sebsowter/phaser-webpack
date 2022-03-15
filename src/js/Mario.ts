@@ -15,13 +15,6 @@ export default class Mario extends Phaser.GameObjects.Sprite {
   constructor(scene: GameScene, x: number, y: number) {
     super(scene, x, y, "player");
 
-    this.setData({ jumpVelocity: -260, walkVelocity: 128 });
-
-    this.scene.add.existing(this);
-    this.scene.physics.world.enable(this);
-
-    this.body.setSize(16, 24).setOffset(0, 8).setCollideWorldBounds(true);
-
     this.scene.anims.create({
       key: "stand",
       frames: this.scene.anims.generateFrameNumbers("player", {
@@ -48,16 +41,29 @@ export default class Mario extends Phaser.GameObjects.Sprite {
         frames: [3],
       }),
     });
+
+    this.scene.add.existing(this);
+    this.scene.physics.world.enable(this);
+
+    this.body
+      .setSize(16, 24)
+      .setOffset(0, 8)
+      .setCollideWorldBounds(true)
+      .setAllowDrag(true)
+      .setMaxVelocityX(160)
+      .setDragX(Math.pow(16, 2));
+
+    this.setState(States.STANDING);
   }
 
   public setState(value: States) {
     switch (value) {
-      case States.JUMPING:
+      case States.STANDING:
         this.body
           .setSize(16, 24)
           .setOffset(0, 8)
-          .setVelocityY(this.jumpVelocity);
-        this.play("jump");
+          .setVelocityX(this.body.velocity.x * 0.5);
+        this.play("stand");
         break;
 
       case States.WALKING:
@@ -66,18 +72,18 @@ export default class Mario extends Phaser.GameObjects.Sprite {
         break;
 
       case States.CROUCHING:
-        this.body.setSize(16, 16).setOffset(0, 16).setVelocityX(0);
+        this.body.setSize(16, 16).setOffset(0, 16);
         this.play("crouch");
+        break;
+
+      case States.JUMPING:
+        this.body.setSize(16, 24).setOffset(0, 8).setVelocityY(-260);
+        this.play("jump");
         break;
 
       case States.FALLING:
         this.body.setSize(16, 24).setOffset(0, 8);
         this.play("jump");
-        break;
-
-      case States.STANDING:
-        this.body.setSize(16, 24).setOffset(0, 8).setVelocityX(0);
-        this.play("stand");
         break;
     }
 
@@ -89,7 +95,7 @@ export default class Mario extends Phaser.GameObjects.Sprite {
     const flipX =
       left && right ? this.flipX : left ? true : right ? false : this.flipX;
     const directionX = Number(left) * -1 + Number(right);
-    const velocityX = directionX * this.walkVelocity;
+    const accelerationX = directionX * Math.pow(16, 2);
 
     switch (this.state) {
       case States.STANDING:
@@ -106,7 +112,7 @@ export default class Mario extends Phaser.GameObjects.Sprite {
 
       case States.WALKING:
         this.setFlipX(flipX);
-        this.body.setVelocity(velocityX, 0);
+        this.body.setAccelerationX(accelerationX);
 
         if (!this.body.onFloor()) {
           this.setState(States.FALLING);
@@ -132,7 +138,7 @@ export default class Mario extends Phaser.GameObjects.Sprite {
 
       case States.FALLING:
         this.setFlipX(flipX);
-        this.body.setVelocityX(velocityX);
+        this.body.setAccelerationX(accelerationX);
 
         if (this.body.onFloor()) {
           if (left || right) {
@@ -145,13 +151,5 @@ export default class Mario extends Phaser.GameObjects.Sprite {
     }
 
     super.preUpdate(time, delta);
-  }
-
-  public get walkVelocity(): number {
-    return this.getData("walkVelocity");
-  }
-
-  public get jumpVelocity(): number {
-    return this.getData("jumpVelocity");
   }
 }
