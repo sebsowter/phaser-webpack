@@ -13,33 +13,22 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
   public body: Phaser.Physics.Arcade.Body;
 
   constructor(scene: GameScene, x: number, y: number) {
-    super(scene, x, y, "player");
+    const texture = "player";
 
-    this.scene.anims.create({
-      key: "stand",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        frames: [0],
-      }),
-    });
-    this.scene.anims.create({
-      key: "walk",
-      frameRate: 12,
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        frames: [1, 2, 0],
-      }),
-      repeat: -1,
-    });
-    this.scene.anims.create({
-      key: "jump",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        frames: [2],
-      }),
-    });
-    this.scene.anims.create({
-      key: "crouch",
-      frames: this.scene.anims.generateFrameNumbers("player", {
-        frames: [3],
-      }),
+    super(scene, x, y, texture);
+
+    Object.entries({
+      stand: [0],
+      walk: [1, 2, 0],
+      jump: [2],
+      crouch: [3],
+    }).forEach(([key, frames]) => {
+      this.scene.anims.create({
+        key,
+        frames: this.scene.anims.generateFrameNumbers(texture, {
+          frames,
+        }),
+      });
     });
 
     this.scene.add.existing(this);
@@ -47,7 +36,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
     this.body.setAllowDrag(true).setMaxVelocityX(160);
 
-    this.setSize(16, 24)
+    this.setSize(24)
       .setCollideWorldBounds(true)
       .setDragX(Math.pow(16, 2))
       .setState(States.STANDING);
@@ -56,26 +45,25 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
   public setState(value: States) {
     switch (value) {
       case States.STANDING:
-        this.setSize(16, 24)
+        this.setSize(24)
           .setVelocityX(this.body.velocity.x * 0.5)
           .play("stand");
         break;
 
       case States.WALKING:
-        this.setSize(16, 24).play("walk");
+        this.setSize(24).play("walk");
         break;
 
       case States.CROUCHING:
-        this.setSize(16, 16).play("crouch");
+        this.setSize(16).play("crouch");
         break;
 
       case States.JUMPING:
-        this.setSize(16, 24).setVelocityY(-260).play("jump");
-        this.scene.sound.play("jump", { volume: 0.5 });
+        this.setSize(24).setVelocityY(-260).play("jump").playAudio("jump");
         break;
 
       case States.FALLING:
-        this.setSize(16, 24).play("jump");
+        this.setSize(24).play("jump");
         break;
     }
 
@@ -86,7 +74,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     const { left, right, down, jump } = this.scene.inputs;
     const flipX =
       left && right ? this.flipX : left ? true : right ? false : this.flipX;
-    const directionX = Number(left) * -1 + Number(right);
+    const directionX = -Number(left) + Number(right);
     const accelerationX = directionX * Math.pow(16, 2);
 
     switch (this.state) {
@@ -110,12 +98,20 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
         } else if (jump) {
           this.setState(States.JUMPING);
         } else if (!left && !right) {
-          this.setState(States.STANDING);
+          if (down) {
+            this.setState(States.CROUCHING);
+          } else {
+            this.setState(States.STANDING);
+          }
         }
         break;
 
       case States.CROUCHING:
-        if (!down) {
+        if (!this.body.onFloor()) {
+          this.setState(States.FALLING);
+        } else if (jump) {
+          this.setState(States.JUMPING);
+        } else if (!down) {
           this.setState(States.STANDING);
         }
         break;
@@ -143,10 +139,16 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     super.preUpdate(time, delta);
   }
 
-  public setSize(width: number, height: number) {
-    super.setSize(width, height);
+  public setSize(height: number) {
+    super.setSize(16, height);
 
     this.body.setOffset(0, this.height - height);
+
+    return this;
+  }
+
+  public playAudio(key: string) {
+    this.scene.sound.play(key, { volume: 0.5 });
 
     return this;
   }
