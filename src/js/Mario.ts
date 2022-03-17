@@ -18,13 +18,17 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture);
 
     Object.entries({
-      stand: [0],
-      walk: [1, 2, 0],
-      jump: [2],
-      crouch: [3],
-    }).forEach(([key, frames]) => {
+      stand: { frames: [0] },
+      walk: { frameRate: 12, frames: [1, 2, 0], repeat: -1 },
+      jump: { frames: [2] },
+      crouch: { frames: [3] },
+    }).forEach(([key, data]) => {
+      const { frameRate, frames, repeat } = data;
+
       this.scene.anims.create({
         key,
+        frameRate,
+        repeat,
         frames: this.scene.anims.generateFrameNumbers(texture, { frames }),
       });
     });
