@@ -28,6 +28,4 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [LoaderScene, GameScene],
 };
 
-window.addEventListener("load", () => {
-  new Phaser.Game(config);
-});
+window.addEventListener("load", () => new Phaser.Game(config));

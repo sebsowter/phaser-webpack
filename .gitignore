@@ -1,8 +1,4 @@
-# dependencies
 /node_modules
-
-# production
 /dist
-
-# misc
+.prettierrc
 .DS_Store

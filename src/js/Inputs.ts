@@ -1,4 +1,4 @@
-interface Keys {
+export interface Keys {
   W: Phaser.Input.Keyboard.Key;
   A: Phaser.Input.Keyboard.Key;
   S: Phaser.Input.Keyboard.Key;
@@ -17,62 +17,44 @@ interface Keys {
 }
 
 export default class Inputs {
-  private _scene: Phaser.Scene;
+  private _input: Phaser.Input.InputPlugin;
   private _keys: Keys;
-  private _padIndex: number = 0;
+  private _padIndex = 0;
 
-  constructor(scene: Phaser.Scene) {
-    this._scene = scene;
-    this._keys = this._scene.input.keyboard.addKeys(
-      "W,A,S,D,Z,X,C,up,left,down,right,space,enter,comma,period"
-    ) as Keys;
+  constructor(input: Phaser.Input.InputPlugin) {
+    this._input = input;
+    this._keys = this._input.keyboard.addKeys("W,A,S,D,Z,X,C,up,left,down,right,space,enter,comma,period") as Keys;
   }
 
-  public get keys(): Keys {
-    return this._keys;
-  }
-
-  public get left(): boolean {
+  public get left() {
     return this.keys.left.isDown || this.keys.A.isDown || this.padAxisH === -1;
   }
 
-  public get right(): boolean {
+  public get right() {
     return this.keys.right.isDown || this.keys.D.isDown || this.padAxisH === 1;
   }
 
-  public get up(): boolean {
+  public get up() {
     return this.keys.up.isDown || this.keys.W.isDown || this.padAxisV === -1;
   }
 
-  public get down(): boolean {
+  public get down() {
     return this.keys.down.isDown || this.keys.S.isDown || this.padAxisV === 1;
   }
 
-  public get jump(): boolean {
-    return (
-      this.up ||
-      this.keys.Z.isDown ||
-      this.keys.X.isDown ||
-      this.keys.C.isDown ||
-      this.keys.space.isDown ||
-      this.padA ||
-      this.padB
-    );
+  protected get keys() {
+    return this._keys;
   }
 
-  private get padA(): boolean {
-    return this.padButtons.some(
-      (button) => button.index % 2 === 1 && button.value === 1
-    );
+  protected get padA() {
+    return this.padButtons.some((button) => button.index % 2 === 1 && button.value === 1);
   }
 
-  private get padB(): boolean {
-    return this.padButtons.some(
-      (button) => button.index % 2 === 0 && button.value === 1
-    );
+  protected get padB() {
+    return this.padButtons.some((button) => button.index % 2 === 0 && button.value === 1);
   }
 
-  private get padAxisH(): number {
+  protected get padAxisH(): number {
     if (this.pad) {
       const [x] = this.pad.axes;
 
@@ -82,7 +64,7 @@ export default class Inputs {
     return 0;
   }
 
-  private get padAxisV(): number {
+  protected get padAxisV(): number {
     if (this.pad) {
       const [_, y] = this.pad.axes;
 
@@ -92,12 +74,12 @@ export default class Inputs {
     return 0;
   }
 
-  private get padButtons(): Phaser.Input.Gamepad.Button[] {
-    return this.pad?.buttons || [];
+  protected get padButtons() {
+    return this.pad?.buttons ?? [];
   }
 
-  private get pad(): Phaser.Input.Gamepad.Gamepad {
-    const pad = this._scene.input.gamepad;
+  protected get pad() {
+    const pad = this._input.gamepad;
 
     if (pad.gamepads.length > this._padIndex) {
       return pad.gamepads[this._padIndex];

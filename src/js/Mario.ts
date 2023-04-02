@@ -1,6 +1,13 @@
 import GameScene from "./GameScene";
 
-enum States {
+export const MarioAnimations = {
+  stand: { frames: [0] },
+  walk: { frameRate: 12, frames: [1, 2, 0], repeat: -1 },
+  jump: { frames: [2] },
+  crouch: { frames: [3] },
+};
+
+export enum States {
   STANDING,
   FALLING,
   CROUCHING,
@@ -38,14 +45,23 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
     this.body.setAllowDrag(true).setMaxVelocityX(160);
 
-    this.setSize(24)
-      .setCollideWorldBounds(true)
-      .setDragX(Math.pow(16, 2))
-      .setState(States.STANDING);
+    this.setSize(24).setCollideWorldBounds(true).setDragX(Math.pow(16, 2)).setState(States.STANDING);
   }
 
   public setState(value: States) {
     switch (value) {
+      case States.CROUCHING:
+        this.setSize(16).play("crouch");
+        break;
+
+      case States.FALLING:
+        this.setSize(24).play("jump");
+        break;
+
+      case States.JUMPING:
+        this.setSize(24).setVelocityY(-260).play("jump").playAudio("jump");
+        break;
+
       case States.STANDING:
         this.setSize(24)
           .setVelocityX(this.body.velocity.x * 0.5)
@@ -54,18 +70,6 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
       case States.WALKING:
         this.setSize(24).play("walk");
-        break;
-
-      case States.CROUCHING:
-        this.setSize(16).play("crouch");
-        break;
-
-      case States.JUMPING:
-        this.setSize(24).setVelocityY(-260).play("jump").playAudio("jump");
-        break;
-
-      case States.FALLING:
-        this.setSize(24).play("jump");
         break;
     }
 
