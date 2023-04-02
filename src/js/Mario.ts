@@ -1,13 +1,6 @@
 import GameScene from "./GameScene";
 
-export const MarioAnimations = {
-  stand: { frames: [0] },
-  walk: { frameRate: 12, frames: [1, 2, 0], repeat: -1 },
-  jump: { frames: [2] },
-  crouch: { frames: [3] },
-};
-
-export enum States {
+export enum MarioStates {
   STANDING,
   FALLING,
   CROUCHING,
@@ -20,9 +13,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
   public body: Phaser.Physics.Arcade.Body;
 
   constructor(scene: GameScene, x: number, y: number) {
-    const texture = "player";
-
-    super(scene, x, y, texture);
+    super(scene, x, y, "player");
 
     Object.entries({
       stand: { frames: [0] },
@@ -36,7 +27,7 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
         key,
         frameRate,
         repeat,
-        frames: this.scene.anims.generateFrameNumbers(texture, { frames }),
+        frames: this.scene.anims.generateFrameNumbers(this.texture.key, { frames }),
       });
     });
 
@@ -45,30 +36,30 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
 
     this.body.setAllowDrag(true).setMaxVelocityX(160);
 
-    this.setSize(24).setCollideWorldBounds(true).setDragX(Math.pow(16, 2)).setState(States.STANDING);
+    this.setSize(24).setCollideWorldBounds(true).setDragX(Math.pow(16, 2)).setState(MarioStates.STANDING);
   }
 
-  public setState(value: States) {
+  public setState(value: MarioStates) {
     switch (value) {
-      case States.CROUCHING:
+      case MarioStates.CROUCHING:
         this.setSize(16).play("crouch");
         break;
 
-      case States.FALLING:
+      case MarioStates.FALLING:
         this.setSize(24).play("jump");
         break;
 
-      case States.JUMPING:
+      case MarioStates.JUMPING:
         this.setSize(24).setVelocityY(-260).play("jump").playAudio("jump");
         break;
 
-      case States.STANDING:
+      case MarioStates.STANDING:
         this.setSize(24)
           .setVelocityX(this.body.velocity.x * 0.5)
           .play("stand");
         break;
 
-      case States.WALKING:
+      case MarioStates.WALKING:
         this.setSize(24).play("walk");
         break;
     }
@@ -83,59 +74,59 @@ export default class Mario extends Phaser.Physics.Arcade.Sprite {
     const accelerationX = directionX * Math.pow(16, 2);
 
     switch (this.state) {
-      case States.STANDING:
+      case MarioStates.STANDING:
         if (!this.body.onFloor()) {
-          this.setState(States.FALLING);
+          this.setState(MarioStates.FALLING);
         } else if (jump) {
-          this.setState(States.JUMPING);
+          this.setState(MarioStates.JUMPING);
         } else if (left || right) {
-          this.setState(States.WALKING);
+          this.setState(MarioStates.WALKING);
         } else if (down) {
-          this.setState(States.CROUCHING);
+          this.setState(MarioStates.CROUCHING);
         }
         break;
 
-      case States.WALKING:
+      case MarioStates.WALKING:
         this.setFlipX(flipX).setAccelerationX(accelerationX);
 
         if (!this.body.onFloor()) {
-          this.setState(States.FALLING);
+          this.setState(MarioStates.FALLING);
         } else if (jump) {
-          this.setState(States.JUMPING);
+          this.setState(MarioStates.JUMPING);
         } else if (!left && !right) {
           if (down) {
-            this.setState(States.CROUCHING);
+            this.setState(MarioStates.CROUCHING);
           } else {
-            this.setState(States.STANDING);
+            this.setState(MarioStates.STANDING);
           }
         }
         break;
 
-      case States.CROUCHING:
+      case MarioStates.CROUCHING:
         if (!this.body.onFloor()) {
-          this.setState(States.FALLING);
+          this.setState(MarioStates.FALLING);
         } else if (jump) {
-          this.setState(States.JUMPING);
+          this.setState(MarioStates.JUMPING);
         } else if (!down) {
-          this.setState(States.STANDING);
+          this.setState(MarioStates.STANDING);
         }
         break;
 
-      case States.JUMPING:
+      case MarioStates.JUMPING:
         if (this.body.velocity.y > 0) {
-          this.setState(States.FALLING);
+          this.setState(MarioStates.FALLING);
         } else if (!jump) {
           this.setVelocityY(this.body.velocity.y * 0.9);
         }
 
-      case States.FALLING:
+      case MarioStates.FALLING:
         this.setFlipX(flipX).setAccelerationX(accelerationX);
 
         if (this.body.onFloor()) {
           if (left || right) {
-            this.setState(States.WALKING);
+            this.setState(MarioStates.WALKING);
           } else {
-            this.setState(States.STANDING);
+            this.setState(MarioStates.STANDING);
           }
         }
         break;
