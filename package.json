@@ -10,19 +10,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sebsowter/westerado.git"
+    "url": "git+https://github.com/sebsowter/phaser-webpack.git"
   },
   "author": "Seb Sowter",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sebsowter/westerado/issues"
+    "url": "https://github.com/sebsowter/phaser-webpack/issues"
   },
   "babel": {
     "presets": [
       "@babel/preset-env"
     ]
   },
-  "homepage": "https://github.com/sebsowter/westerado#readme",
+  "homepage": "https://github.com/sebsowter/phaser-webpack#readme",
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/preset-env": "^7.21.4",
