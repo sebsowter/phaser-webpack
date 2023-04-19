@@ -1,6 +1,6 @@
 {
   "name": "phaser-webpack",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "description": "Phaser Webpack",
   "main": "src/js/index.ts",
   "scripts": {
@@ -10,19 +10,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sebsowter/phaser-webpack.git"
+    "url": "git+https://github.com/sebsowter/westerado.git"
   },
   "author": "Seb Sowter",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sebsowter/phaser-webpack/issues"
+    "url": "https://github.com/sebsowter/westerado/issues"
   },
   "babel": {
     "presets": [
       "@babel/preset-env"
     ]
   },
-  "homepage": "https://github.com/sebsowter/phaser-webpack#readme",
+  "homepage": "https://github.com/sebsowter/westerado#readme",
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/preset-env": "^7.21.4",
