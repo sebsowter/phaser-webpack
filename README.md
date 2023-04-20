@@ -7,7 +7,7 @@ This Webpack setup takes care of your code bundling and local development server
 Included are some handy demonstration files:
 
 - `Inputs` class for handling gamepad and keyboard inputs
-- A `Player` class demonstrating character movement and state management
+- `Player` class demonstrating character movement and state management
 - A basic tilemap created using [Tiled](https://www.mapeditor.org/)
 
 [View the demo](https://sebsowter.github.io/phaser-webpack/)
