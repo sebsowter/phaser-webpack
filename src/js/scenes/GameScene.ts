@@ -18,7 +18,7 @@ export default class GameScene extends Phaser.Scene {
     const tilemap = this.make.tilemap({ key: "tilemap" });
     const tileset = tilemap.addTilesetImage("tiles");
 
-    const collisionLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
+    const tileLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
       switch (tile.index) {
         case 2:
         case 6:
@@ -42,7 +42,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64).TILE_BIAS = 8;
 
-    this.physics.add.collider(this.collisionGroup, collisionLayer);
+    this.physics.add.collider(this.collisionGroup, tileLayer);
 
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels).startFollow(this.player, true);
   }
