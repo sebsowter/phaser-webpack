@@ -1,10 +1,14 @@
-# Phaser 3 Webpack 5 Boilerplate
+# Phaser 3 Webpack 5 Minimal Boilerplate
 
 Get up and running with Phaser 3 using TypeScript or JavaScript ES6.
 
 This Webpack setup takes care of your code bundling and local development server.
 
-Included are some handy class files, extending Phaser 3's Scene and Sprite base classes.
+Included are some handy demonstration files:
+
+- `Inputs` class for handling gamepad and keyboard inputs
+- A `Player` class demonstrating character movement and state management
+- A basic tilemap created using [Tiled](https://www.mapeditor.org/)
 
 [View the demo](https://sebsowter.github.io/phaser-webpack/)
 
@@ -14,7 +18,7 @@ Included are some handy class files, extending Phaser 3's Scene and Sprite base 
 
 Ensure you have [Node.js](https://nodejs.org) installed.
 
-Clone this repo and `cd` to project directory.
+Clone this repository and `cd` to project directory.
 
 ```
 npm i
@@ -22,14 +26,24 @@ npm i
 
 ## Tasks
 
-Run the development server to preview locally at http://localhost:8080/.
+### Run the development server
 
 ```
 npm start
 ```
 
-Create a production build.
+Preview locally at http://localhost:8080/.
+
+### Create a production build
 
 ```
 npm run build
 ```
+
+This bundles your files to the distribution (`/dist`) folder. The webpack config is set up to output Phaser and your game code into separate .js files.
+
+_If you are publishing your game to [itch.io](https://itch.io) simply zip up the files in the `/dist` folder and upload the zip file._
+
+## Community
+
+This repository is actively maintained. Every so often I upgrade the packages and add features. I like boilerplates to be light so I have kept this minimal. But if you think this package would benefit from additional features then feel free to reach out or add an issue.
