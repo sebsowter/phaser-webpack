@@ -54,7 +54,7 @@ export default class Inputs {
     return this.padButtons.some((button) => button.index % 2 === 0 && button.value === 1);
   }
 
-  protected get padAxisH(): number {
+  protected get padAxisH() {
     if (this.pad) {
       const [x] = this.pad.axes;
 
@@ -64,7 +64,7 @@ export default class Inputs {
     return 0;
   }
 
-  protected get padAxisV(): number {
+  protected get padAxisV() {
     if (this.pad) {
       const [_, y] = this.pad.axes;
 
