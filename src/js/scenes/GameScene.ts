@@ -3,7 +3,6 @@ import Player from "../gameObjects/Player";
 
 export default class GameScene extends Phaser.Scene {
   private _collisionGroup: Phaser.GameObjects.Group;
-  private _collisionLayer: Phaser.Tilemaps.TilemapLayer;
   private _inputs: GameInputs;
   private _player: Player;
 
@@ -19,7 +18,7 @@ export default class GameScene extends Phaser.Scene {
     const tilemap = this.make.tilemap({ key: "tilemap" });
     const tileset = tilemap.addTilesetImage("tiles");
 
-    this._collisionLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
+    const collisionLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
       switch (tile.index) {
         case 2:
         case 6:
@@ -43,17 +42,13 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64).TILE_BIAS = 8;
 
-    this.physics.add.collider(this.collisionGroup, this.collisionLayer);
+    this.physics.add.collider(this.collisionGroup, collisionLayer);
 
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels).startFollow(this.player, true);
   }
 
   public get collisionGroup() {
     return this._collisionGroup;
-  }
-
-  public get collisionLayer() {
-    return this._collisionLayer;
   }
 
   public get inputs() {
