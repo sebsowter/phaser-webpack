@@ -29,9 +29,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     animations.forEach((animation) => this.scene.anims.create(animation));
 
     this.scene.physics.world.enable(this);
-    this.scene.physics.add.collider(this, this.scene.collisionLayer);
 
     this.body.setAllowDrag(true).setMaxVelocityX(160);
+    this.scene.collisionGroup.add(this);
 
     this.scene.add
       .existing(this)

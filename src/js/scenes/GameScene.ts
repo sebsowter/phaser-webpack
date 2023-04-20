@@ -2,6 +2,7 @@ import GameInputs from "../input/GameInputs";
 import Player from "../gameObjects/Player";
 
 export default class GameScene extends Phaser.Scene {
+  private _collisionGroup: Phaser.GameObjects.Group;
   private _collisionLayer: Phaser.Tilemaps.TilemapLayer;
   private _inputs: GameInputs;
   private _player: Player;
@@ -32,6 +33,8 @@ export default class GameScene extends Phaser.Scene {
       }
     });
 
+    this._collisionGroup = this.add.group();
+
     this._inputs = new GameInputs(this.input);
 
     this._player = new Player(this, 32, 192);
@@ -40,7 +43,13 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64).TILE_BIAS = 8;
 
+    this.physics.add.collider(this.collisionGroup, this.collisionLayer);
+
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels).startFollow(this.player, true);
+  }
+
+  public get collisionGroup() {
+    return this._collisionGroup;
   }
 
   public get collisionLayer() {
