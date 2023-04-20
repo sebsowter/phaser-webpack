@@ -17,7 +17,6 @@ export default class GameScene extends Phaser.Scene {
   public create() {
     const tilemap = this.make.tilemap({ key: "tilemap" });
     const tileset = tilemap.addTilesetImage("tiles");
-
     const tileLayer = tilemap.createLayer(0, tileset, 0, 0).forEachTile((tile) => {
       switch (tile.index) {
         case 2:
