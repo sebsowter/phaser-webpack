@@ -1,6 +1,6 @@
 import Inputs from "./Inputs";
 
-export default class MarioInputs extends Inputs {
+export default class PlayerInputs extends Inputs {
   public get jump() {
     return (
       this.up ||
