@@ -46,4 +46,4 @@ _If you are publishing your game to [itch.io](https://itch.io) simply zip up the
 
 ## Community
 
-This repository is actively maintained. Every so often I upgrade the packages and add features. I like boilerplates to be light so I have kept this minimal. But if you think this package would benefit from additional features then feel free to reach out or add an issue.
+This repository is actively maintained. Every so often I upgrade the packages and add features. I like boilerplates to be light so I have kept it minimal. But if you think this package would benefit from additional features then feel free to reach out or add an issue.
