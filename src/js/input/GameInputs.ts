@@ -1,6 +1,6 @@
 import Inputs from "./Inputs";
 
-export default class PlayerInputs extends Inputs {
+export default class GameInputs extends Inputs {
   public get jump() {
     return (
       this.up ||

@@ -1,17 +1,13 @@
-import PlayerInputs from "../input/PlayerInputs";
+import GameInputs from "../input/GameInputs";
 import Player from "../gameObjects/Player";
 
 export default class GameScene extends Phaser.Scene {
   private _collisionLayer: Phaser.Tilemaps.TilemapLayer;
+  private _inputs: GameInputs;
   private _player: Player;
-  private _inputs: PlayerInputs;
 
   constructor() {
-    super({
-      key: "game",
-      active: false,
-      visible: false,
-    });
+    super({ key: "game", active: false, visible: false });
   }
 
   public preload() {
@@ -36,7 +32,7 @@ export default class GameScene extends Phaser.Scene {
       }
     });
 
-    this._inputs = new PlayerInputs(this.input);
+    this._inputs = new GameInputs(this.input);
 
     this._player = new Player(this, 32, 192);
 
