@@ -26,6 +26,14 @@ export default class Inputs {
     this._keys = this._input.keyboard.addKeys("W,A,S,D,Z,X,C,up,left,down,right,space,enter,comma,period") as Keys;
   }
 
+  public setPadIndex(value: number) {
+    if (this.pads.length > value) {
+      this._padIndex = value;
+    }
+
+    return this;
+  }
+
   public get left() {
     return this.keys.left.isDown || this.keys.A.isDown || this.padAxisH === -1;
   }
@@ -79,12 +87,10 @@ export default class Inputs {
   }
 
   protected get pad() {
-    const pad = this._input.gamepad;
+    return this.pads[this._padIndex];
+  }
 
-    if (pad.gamepads.length > this._padIndex) {
-      return pad.gamepads[this._padIndex];
-    }
-
-    return;
+  protected get pads() {
+    return this._input.gamepad.gamepads;
   }
 }

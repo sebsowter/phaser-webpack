@@ -1,4 +1,4 @@
-import GameInputs from "../input/GameInputs";
+import GameInputs from "../inputs/GameInputs";
 import Player from "../gameObjects/Player";
 
 export default class GameScene extends Phaser.Scene {
