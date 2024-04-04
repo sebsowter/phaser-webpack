@@ -1,4 +1,4 @@
-export default class LoaderScene extends Phaser.Scene {
+export class LoaderScene extends Phaser.Scene {
   public preload() {
     this.load.image("tiles", "./assets/images/tiles.png");
     this.load.audio("jump", "./assets/audio/jump.mp3");

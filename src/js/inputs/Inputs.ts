@@ -16,7 +16,7 @@ export interface Keys {
   period: Phaser.Input.Keyboard.Key;
 }
 
-export default class Inputs {
+export class Inputs {
   private _input: Phaser.Input.InputPlugin;
   private _keys: Keys;
   private _padIndex = 0;

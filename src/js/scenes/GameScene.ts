@@ -1,7 +1,7 @@
-import GameInputs from "../inputs/GameInputs";
-import Player from "../gameObjects/Player";
+import { GameInputs } from "../inputs/GameInputs";
+import { Player } from "../gameObjects/Player";
 
-export default class GameScene extends Phaser.Scene {
+export class GameScene extends Phaser.Scene {
   private _collisionGroup: Phaser.GameObjects.Group;
   private _inputs: GameInputs;
   private _player: Player;

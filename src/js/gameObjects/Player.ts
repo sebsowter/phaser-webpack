@@ -1,4 +1,4 @@
-import GameScene from "../scenes/GameScene";
+import { GameScene } from "../scenes";
 
 export enum PlayerStates {
   STANDING,
@@ -8,7 +8,7 @@ export enum PlayerStates {
   WALKING,
 }
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
+export class Player extends Phaser.Physics.Arcade.Sprite {
   public scene: GameScene;
   public body: Phaser.Physics.Arcade.Body;
 
