@@ -24,6 +24,15 @@ export default class Inputs {
   constructor(input: Phaser.Input.InputPlugin) {
     this._input = input;
     this._keys = this._input.keyboard.addKeys("W,A,S,D,Z,X,C,up,left,down,right,space,enter,comma,period") as Keys;
+
+    this._input.keyboard.addKeys(
+      {
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+      },
+      true,
+      false
+    );
   }
 
   public setPadIndex(value: number) {

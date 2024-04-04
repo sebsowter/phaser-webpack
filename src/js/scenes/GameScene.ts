@@ -1,8 +1,10 @@
 import GameInputs from "../inputs/GameInputs";
 import Player from "../gameObjects/Player";
+import Goomba from "../gameObjects/Goomba";
 
-export default class GameScene extends Phaser.Scene {
+export class GameScene extends Phaser.Scene {
   private _collisionGroup: Phaser.GameObjects.Group;
+  private _enemyGroup: Phaser.GameObjects.Group;
   private _inputs: GameInputs;
   private _player: Player;
 
@@ -32,6 +34,7 @@ export default class GameScene extends Phaser.Scene {
     });
 
     this._collisionGroup = this.add.group();
+    this._enemyGroup = this.add.group();
 
     this._inputs = new GameInputs(this.input);
 
@@ -42,12 +45,41 @@ export default class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(0, -64, widthInPixels, heightInPixels + 64).TILE_BIAS = 8;
 
     this.physics.add.collider(this.collisionGroup, tileLayer);
+    this.physics.add.overlap(this.player, this.enemyGroup, this.onCollideEnemy);
 
     this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels).startFollow(this.player, true);
+
+    this.createObjects(tilemap);
+  }
+
+  private createObjects(tilemap: Phaser.Tilemaps.Tilemap) {
+    const objectLayer = tilemap.getObjectLayer("objects");
+
+    objectLayer?.objects.forEach((object) => {
+      const { name, properties = [], x, y } = object;
+      const map = new Map<string, boolean | number | string>();
+
+      properties.forEach(({ name, value }) => map.set(name, value));
+
+      switch (name) {
+        case "goomba":
+          return new Goomba(this, x, y, Boolean(map.get("flipX")));
+      }
+    });
+
+    return this;
+  }
+
+  private onCollideEnemy(body1: Player, body2) {
+    body1.wound();
   }
 
   public get collisionGroup() {
     return this._collisionGroup;
+  }
+
+  public get enemyGroup() {
+    return this._enemyGroup;
   }
 
   public get inputs() {
